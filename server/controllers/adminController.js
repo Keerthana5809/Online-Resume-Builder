@@ -1,7 +1,10 @@
 const User = require('../models/User');
 const Resume = require('../models/Resume');
+const Template = require('../models/Template');
 
-// GET /api/admin/users - Get all users
+// ─── USER MANAGEMENT ─────────────────────────────────────────
+
+// GET /api/admin/users
 exports.getUsers = async (req, res) => {
     try {
         const users = await User.find().select('-password').sort({ createdAt: -1 });
@@ -12,7 +15,7 @@ exports.getUsers = async (req, res) => {
     }
 };
 
-// PUT /api/admin/users/:id/toggle-admin - Toggle admin status
+// PUT /api/admin/users/:id/toggle-admin
 exports.toggleAdmin = async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
@@ -29,7 +32,7 @@ exports.toggleAdmin = async (req, res) => {
     }
 };
 
-// DELETE /api/admin/users/:id - Delete a user and their resumes
+// DELETE /api/admin/users/:id
 exports.deleteUser = async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
@@ -46,13 +49,88 @@ exports.deleteUser = async (req, res) => {
     }
 };
 
-// GET /api/admin/stats - Get platform stats
+// GET /api/admin/stats
 exports.getStats = async (req, res) => {
     try {
         const totalUsers = await User.countDocuments();
         const totalAdmins = await User.countDocuments({ isAdmin: true });
         const totalResumes = await Resume.countDocuments();
-        res.json({ totalUsers, totalAdmins, totalResumes });
+        const totalTemplates = await Template.countDocuments({ isActive: true });
+        res.json({ totalUsers, totalAdmins, totalResumes, totalTemplates });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
+
+// ─── TEMPLATE MANAGEMENT ────────────────────────────────────
+
+// POST /api/admin/templates - Upload a new template
+exports.uploadTemplate = async (req, res) => {
+    try {
+        const { name, description } = req.body;
+        if (!req.file) return res.status(400).json({ msg: 'No file uploaded' });
+        if (!name || !name.trim()) return res.status(400).json({ msg: 'Template name is required' });
+
+        // Convert buffer to base64 data URL
+        const base64 = req.file.buffer.toString('base64');
+        const dataUrl = `data:${req.file.mimetype};base64,${base64}`;
+
+        const template = new Template({
+            name: name.trim(),
+            description: description || '',
+            previewImage: dataUrl,
+            fileType: req.file.mimetype,
+            uploadedBy: req.user.id
+        });
+
+        await template.save();
+        // Return without the heavy base64 image in list responses
+        res.status(201).json({
+            _id: template._id,
+            name: template.name,
+            description: template.description,
+            fileType: template.fileType,
+            isActive: template.isActive,
+            createdAt: template.createdAt
+        });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
+
+// GET /api/admin/templates - List all templates (admin, no image data for list)
+exports.getTemplates = async (req, res) => {
+    try {
+        const templates = await Template.find().select('-previewImage').sort({ createdAt: -1 });
+        res.json(templates);
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
+
+// DELETE /api/admin/templates/:id
+exports.deleteTemplate = async (req, res) => {
+    try {
+        const template = await Template.findByIdAndDelete(req.params.id);
+        if (!template) return res.status(404).json({ msg: 'Template not found' });
+        res.json({ msg: 'Template deleted' });
+    } catch (err) {
+        console.error(err.message);
+        res.status(500).send('Server Error');
+    }
+};
+
+// PUT /api/admin/templates/:id/toggle - Toggle isActive
+exports.toggleTemplate = async (req, res) => {
+    try {
+        const template = await Template.findById(req.params.id);
+        if (!template) return res.status(404).json({ msg: 'Template not found' });
+        template.isActive = !template.isActive;
+        await template.save();
+        res.json({ msg: `Template ${template.isActive ? 'activated' : 'deactivated'}`, template });
     } catch (err) {
         console.error(err.message);
         res.status(500).send('Server Error');

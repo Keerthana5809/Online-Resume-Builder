@@ -5,12 +5,14 @@ if (!localStorage.getItem('token')) {
 
 const urlParams = new URLSearchParams(window.location.search);
 const resumeId = urlParams.get('id');
+// Support both templateId (MongoDB ref to uploaded template) and legacy template name
+const urlTemplateId = urlParams.get('templateId') || null;
 const urlTemplate = urlParams.get('template') || 'modern';
-const urlColor = urlParams.get('color') || '#2563EB';
+const urlColor = decodeURIComponent(urlParams.get('color') || '#2563EB');
 
-// Apply chosen color as primary
-document.documentElement.style.setProperty('--primary-color', decodeURIComponent(urlColor));
-document.documentElement.style.setProperty('--primary-hover', decodeURIComponent(urlColor));
+// Apply chosen accent color as CSS variable
+document.documentElement.style.setProperty('--primary-color', urlColor);
+document.documentElement.style.setProperty('--primary-hover', urlColor);
 
 let resumeData = {
     personalDetails: {
@@ -29,8 +31,9 @@ let resumeData = {
     skills: [],
     certifications: [],
     languages: [],
-    templateType: urlTemplate,
-    accentColor: decodeURIComponent(urlColor)
+    templateId: urlTemplateId,   // MongoDB ObjectId of admin-uploaded template
+    templateType: urlTemplate,   // fallback legacy field
+    accentColor: urlColor
 };
 
 // Initialize

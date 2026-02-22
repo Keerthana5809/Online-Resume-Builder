@@ -36,10 +36,10 @@
         }
 
         .admin-nav .logo {
-            color: #1E293B;
             text-decoration: none;
             font-weight: 800;
             font-size: 1.4rem;
+            color: #1E293B;
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -57,277 +57,13 @@
             padding: 0.2rem 0.6rem;
             border-radius: 20px;
             font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .admin-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem 1.5rem;
-        }
-
-        /* Stats */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: #fff;
-            border: 1px solid #E2E8F0;
-            border-radius: 12px;
-            padding: 1.5rem 2rem;
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            animation: fadeInUp 0.5s ease both;
-            transition: box-shadow 0.2s, transform 0.2s;
-        }
-
-        .stat-card:hover {
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            transform: translateY(-2px);
-        }
-
-        .stat-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.3rem;
-            flex-shrink: 0;
-        }
-
-        .stat-icon.blue {
-            background: #EFF6FF;
-            color: #2563EB;
-        }
-
-        .stat-icon.green {
-            background: #F0FDF4;
-            color: #16A34A;
-        }
-
-        .stat-icon.amber {
-            background: #FFFBEB;
-            color: #D97706;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #0F172A;
-            line-height: 1;
-        }
-
-        .stat-label {
-            color: #64748B;
-            font-size: 0.85rem;
-            margin-top: 0.3rem;
-            font-weight: 500;
-        }
-
-        /* Table section */
-        .admin-section {
-            background: #fff;
-            border: 1px solid #E2E8F0;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-            animation: fadeInUp 0.5s ease 0.1s both;
-        }
-
-        .section-head {
-            padding: 1.2rem 1.5rem;
-            border-bottom: 1px solid #F1F5F9;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .section-head h2 {
-            font-size: 1rem;
-            font-weight: 700;
-            color: #0F172A;
-        }
-
-        .user-count-badge {
-            background: #F1F5F9;
-            color: #64748B;
-            font-size: 0.75rem;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-weight: 600;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        thead th {
-            background: #F8FAFC;
-            color: #64748B;
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            padding: 0.75rem 1.5rem;
-            text-align: left;
-            font-weight: 600;
-            border-bottom: 1px solid #E2E8F0;
-        }
-
-        tbody tr {
-            border-bottom: 1px solid #F1F5F9;
-            transition: background 0.15s;
-        }
-
-        tbody tr:hover {
-            background: #F8FAFC;
-        }
-
-        tbody tr:last-child {
-            border-bottom: none;
-        }
-
-        td {
-            padding: 0.9rem 1.5rem;
-            font-size: 0.9rem;
-            color: #334155;
-            vertical-align: middle;
-        }
-
-        .user-cell {
-            display: flex;
-            align-items: center;
-            gap: 0.8rem;
-        }
-
-        .user-avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.85rem;
-            color: white;
-            flex-shrink: 0;
-        }
-
-        .user-name {
-            font-weight: 600;
-            color: #1E293B;
-        }
-
-        .user-email {
-            color: #64748B;
-            font-size: 0.85rem;
-        }
-
-        .date-cell {
-            color: #94A3B8;
-            font-size: 0.83rem;
-        }
-
-        .role-badge {
-            padding: 0.25rem 0.7rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 700;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.3rem;
-        }
-
-        .badge-admin {
-            background: #FEF3C7;
-            color: #B45309;
-            border: 1px solid #FDE68A;
-        }
-
-        .badge-user {
-            background: #F1F5F9;
-            color: #64748B;
-            border: 1px solid #E2E8F0;
-        }
-
-        .actions-cell {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-
-        .action-btn {
-            border: none;
-            padding: 0.35rem 0.75rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.78rem;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-
-        .btn-promote {
-            background: #F0FDF4;
-            color: #16A34A;
-        }
-
-        .btn-promote:hover {
-            background: #16A34A;
-            color: white;
-        }
-
-        .btn-demote {
-            background: #FFFBEB;
-            color: #D97706;
-        }
-
-        .btn-demote:hover {
-            background: #D97706;
-            color: white;
-        }
-
-        .btn-del {
-            background: #FEF2F2;
-            color: #DC2626;
-        }
-
-        .btn-del:hover {
-            background: #DC2626;
-            color: white;
-        }
-
-        .self-tag {
-            color: #CBD5E1;
-            font-size: 0.78rem;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: #94A3B8;
-        }
-
-        .empty-state i {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: #CBD5E1;
         }
 
         .logout-btn {
             background: #FEF2F2;
             color: #DC2626;
             border: 1px solid #FECACA;
-            padding: 0.45rem 1rem;
+            padding: 0.4rem 1rem;
             border-radius: 8px;
             cursor: pointer;
             font-weight: 600;
@@ -354,10 +90,529 @@
             color: #2563EB;
         }
 
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: #fff;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 1.2rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            transition: box-shadow 0.2s, transform 0.2s;
+            animation: fadeInUp 0.5s ease both;
+        }
+
+        .stat-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .stat-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .si-blue {
+            background: #EFF6FF;
+            color: #2563EB;
+        }
+
+        .si-green {
+            background: #F0FDF4;
+            color: #16A34A;
+        }
+
+        .si-amber {
+            background: #FFFBEB;
+            color: #D97706;
+        }
+
+        .si-purple {
+            background: #F5F3FF;
+            color: #7C3AED;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: #0F172A;
+            line-height: 1;
+        }
+
+        .stat-label {
+            color: #64748B;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-top: 0.2rem;
+        }
+
+        /* Tabs */
+        .tab-bar {
+            display: flex;
+            gap: 0;
+            border-bottom: 2px solid #E2E8F0;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab-btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #64748B;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab-btn:hover {
+            color: #1E293B;
+        }
+
+        .tab-btn.active {
+            color: #2563EB;
+            border-bottom-color: #2563EB;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Panel card */
+        .panel {
+            background: #fff;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .panel-head {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #F1F5F9;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .panel-head h2 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0F172A;
+        }
+
+        /* Table */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #F8FAFC;
+            color: #64748B;
+            font-size: 0.73rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.75rem 1.5rem;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #F1F5F9;
+            transition: background 0.15s;
+        }
+
+        tbody tr:hover {
+            background: #F8FAFC;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        td {
+            padding: 0.85rem 1.5rem;
+            font-size: 0.88rem;
+            color: #334155;
+            vertical-align: middle;
+        }
+
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3B82F6, #8B5CF6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.82rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .role-badge {
+            padding: 0.2rem 0.65rem;
+            border-radius: 20px;
+            font-size: 0.73rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .badge-admin {
+            background: #FEF3C7;
+            color: #B45309;
+            border: 1px solid #FDE68A;
+        }
+
+        .badge-user {
+            background: #F1F5F9;
+            color: #64748B;
+            border: 1px solid #E2E8F0;
+        }
+
+        .act-btn {
+            border: none;
+            padding: 0.32rem 0.7rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.78rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .ab-promote {
+            background: #F0FDF4;
+            color: #16A34A;
+        }
+
+        .ab-promote:hover {
+            background: #16A34A;
+            color: white;
+        }
+
+        .ab-demote {
+            background: #FFFBEB;
+            color: #D97706;
+        }
+
+        .ab-demote:hover {
+            background: #D97706;
+            color: white;
+        }
+
+        .ab-del {
+            background: #FEF2F2;
+            color: #DC2626;
+        }
+
+        .ab-del:hover {
+            background: #DC2626;
+            color: white;
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 0.4rem;
+            align-items: center;
+        }
+
+        /* Template grid */
+        .tpl-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.5rem;
+            padding: 1.5rem;
+        }
+
+        .tpl-admin-card {
+            background: #fff;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .tpl-admin-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .tpl-thumb {
+            height: 180px;
+            overflow: hidden;
+            background: #F1F5F9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .tpl-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .tpl-pdf-icon {
+            font-size: 3rem;
+            color: #DC2626;
+        }
+
+        .tpl-inactive-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .inactive-label {
+            background: #F1F5F9;
+            color: #64748B;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            border: 1px solid #E2E8F0;
+        }
+
+        .tpl-body {
+            padding: 1rem;
+            border-top: 1px solid #F1F5F9;
+        }
+
+        .tpl-name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #1E293B;
+            margin-bottom: 0.25rem;
+        }
+
+        .tpl-desc {
+            font-size: 0.78rem;
+            color: #64748B;
+            margin-bottom: 0.75rem;
+            min-height: 1rem;
+        }
+
+        .tpl-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .tpl-date {
+            font-size: 0.72rem;
+            color: #94A3B8;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Upload form */
+        .upload-form {
+            padding: 1.5rem;
+            border-bottom: 1px solid #F1F5F9;
+            background: #FAFAFA;
+        }
+
+        .upload-form h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 1rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-field input,
+        .form-field textarea {
+            width: 100%;
+            padding: 0.6rem 0.9rem;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-family: 'Inter', sans-serif;
+            color: #1E293B;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-field input:focus,
+        .form-field textarea:focus {
+            outline: none;
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-field label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 0.4rem;
+        }
+
+        .form-field textarea {
+            resize: vertical;
+            height: 72px;
+        }
+
+        .drop-zone {
+            border: 2px dashed #CBD5E1;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fff;
+            margin-bottom: 1rem;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.drag-over {
+            border-color: #2563EB;
+            background: #EFF6FF;
+        }
+
+        .drop-zone i {
+            font-size: 2rem;
+            color: #CBD5E1;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+
+        .drop-zone p {
+            color: #64748B;
+            font-size: 0.88rem;
+        }
+
+        .drop-zone small {
+            color: #94A3B8;
+            font-size: 0.78rem;
+            display: block;
+            margin-top: 0.3rem;
+        }
+
+        #file-preview {
+            margin-top: 0.75rem;
+        }
+
+        .file-chosen {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #F0FDF4;
+            border: 1px solid #BBF7D0;
+            padding: 0.5rem 0.8rem;
+            border-radius: 8px;
+            font-size: 0.83rem;
+            color: #15803D;
+        }
+
+        .upload-actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-upload {
+            background: #2563EB;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-upload:hover {
+            background: #1D4ED8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+        }
+
+        .btn-upload:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #94A3B8;
+        }
+
+        .empty-state i {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #CBD5E1;
+            display: block;
+        }
+
+        .count-badge {
+            background: #F1F5F9;
+            color: #64748B;
+            font-size: 0.73rem;
+            padding: 0.2rem 0.7rem;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(16px);
+                transform: translateY(14px);
             }
 
             to {
@@ -366,14 +621,19 @@
             }
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 900px) {
             .stats-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr 1fr;
             }
 
-            table {
-                display: block;
-                overflow-x: auto;
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -381,13 +641,10 @@
 
 <body>
     <nav class="admin-nav">
-        <a href="/admin" class="logo">
-            <i class="fas fa-shield-alt"></i>
-            CarizmaX
-            <span class="admin-badge">Admin</span>
-        </a>
-        <div style="display:flex; align-items:center; gap:1.2rem;">
-            <span id="admin-name" style="color:#64748B; font-size:0.9rem; font-weight:500;"></span>
+        <a href="/admin" class="logo"><i class="fas fa-shield-alt"></i> CarizmaX <span
+                class="admin-badge">Admin</span></a>
+        <div style="display:flex;align-items:center;gap:1.2rem;">
+            <span id="admin-name" style="color:#64748B;font-size:0.88rem;font-weight:500;"></span>
             <a href="/dashboard" class="back-link"><i class="fas fa-arrow-left"></i> Back to App</a>
             <button class="logout-btn" onclick="api.auth.logout()">Logout</button>
         </div>
@@ -397,21 +654,28 @@
         <!-- Stats -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-icon blue"><i class="fas fa-users"></i></div>
+                <div class="stat-icon si-blue"><i class="fas fa-users"></i></div>
                 <div>
                     <div class="stat-value" id="stat-users">—</div>
                     <div class="stat-label">Total Users</div>
                 </div>
             </div>
-            <div class="stat-card" style="animation-delay:0.1s">
-                <div class="stat-icon green"><i class="fas fa-file-alt"></i></div>
+            <div class="stat-card" style="animation-delay:0.08s">
+                <div class="stat-icon si-green"><i class="fas fa-file-alt"></i></div>
                 <div>
                     <div class="stat-value" id="stat-resumes">—</div>
-                    <div class="stat-label">Total Resumes</div>
+                    <div class="stat-label">Resumes Created</div>
                 </div>
             </div>
-            <div class="stat-card" style="animation-delay:0.2s">
-                <div class="stat-icon amber"><i class="fas fa-user-shield"></i></div>
+            <div class="stat-card" style="animation-delay:0.16s">
+                <div class="stat-icon si-purple"><i class="fas fa-layer-group"></i></div>
+                <div>
+                    <div class="stat-value" id="stat-templates">—</div>
+                    <div class="stat-label">Templates</div>
+                </div>
+            </div>
+            <div class="stat-card" style="animation-delay:0.24s">
+                <div class="stat-icon si-amber"><i class="fas fa-user-shield"></i></div>
                 <div>
                     <div class="stat-value" id="stat-admins">—</div>
                     <div class="stat-label">Admins</div>
@@ -419,15 +683,72 @@
             </div>
         </div>
 
-        <!-- Users Table -->
-        <div class="admin-section">
-            <div class="section-head">
-                <h2><i class="fas fa-users" style="color:#2563EB; margin-right:0.5rem;"></i> User Management</h2>
-                <span class="user-count-badge" id="user-count-badge">Loading...</span>
+        <!-- Tabs -->
+        <div class="tab-bar">
+            <button class="tab-btn active" id="tab-users-btn" onclick="switchTab('users')">
+                <i class="fas fa-users"></i> User Management
+            </button>
+            <button class="tab-btn" id="tab-templates-btn" onclick="switchTab('templates')">
+                <i class="fas fa-layer-group"></i> Template Management
+            </button>
+        </div>
+
+        <!-- Users tab -->
+        <div class="tab-content active" id="tab-users">
+            <div class="panel">
+                <div class="panel-head">
+                    <h2><i class="fas fa-users" style="color:#2563EB;margin-right:0.4rem;"></i> All Users</h2>
+                    <span class="count-badge" id="user-count-badge">Loading...</span>
+                </div>
+                <div id="users-table-container">
+                    <div class="empty-state"><i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading users...</p>
+                    </div>
+                </div>
             </div>
-            <div id="users-table-container">
-                <div class="empty-state"><i class="fas fa-spinner fa-spin"></i>
-                    <p style="margin-top:1rem;">Loading users...</p>
+        </div>
+
+        <!-- Templates tab -->
+        <div class="tab-content" id="tab-templates">
+            <div class="panel">
+                <!-- Upload form -->
+                <div class="upload-form">
+                    <h3><i class="fas fa-cloud-upload-alt" style="color:#2563EB;margin-right:0.5rem;"></i> Upload New
+                        Template</h3>
+                    <div class="form-row">
+                        <div class="form-field">
+                            <label for="tpl-name">Template Name *</label>
+                            <input type="text" id="tpl-name" placeholder="e.g. Executive Dark, Minimal Blue..." />
+                        </div>
+                        <div class="form-field">
+                            <label for="tpl-desc">Description</label>
+                            <input type="text" id="tpl-desc" placeholder="Short description of this template..." />
+                        </div>
+                    </div>
+                    <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+                        <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,application/pdf"
+                            hidden onchange="handleFileSelect(this)">
+                        <i class="fas fa-file-image"></i>
+                        <p><strong>Click to browse</strong> or drag & drop a file here</p>
+                        <small>Accepted: JPG, PNG, WebP, PDF &nbsp;•&nbsp; Max size: 5 MB</small>
+                    </div>
+                    <div id="file-preview"></div>
+                    <div class="upload-actions">
+                        <button class="btn-upload" id="upload-btn" onclick="uploadTemplate()" disabled>
+                            <i class="fas fa-upload"></i> Upload Template
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Template list -->
+                <div class="panel-head" style="border-top:1px solid #F1F5F9;">
+                    <h2><i class="fas fa-layer-group" style="color:#7C3AED;margin-right:0.4rem;"></i> All Templates</h2>
+                    <span class="count-badge" id="tpl-count-badge">Loading...</span>
+                </div>
+                <div id="templates-grid">
+                    <div class="empty-state"><i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading templates...</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -449,98 +770,75 @@
                 ...options,
                 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, ...(options.headers || {}) }
             });
+            if (options.rawFetch) return res;
             const data = await res.json();
             if (!res.ok) throw new Error(data.msg || 'Request failed');
             return data;
         }
 
+        // ── Tabs
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            document.getElementById(`tab-${tab}-btn`).classList.add('active');
+        }
+
+        // ── Stats
         async function loadStats() {
             try {
-                const stats = await adminFetch('/stats');
-                document.getElementById('stat-users').textContent = stats.totalUsers;
-                document.getElementById('stat-resumes').textContent = stats.totalResumes;
-                document.getElementById('stat-admins').textContent = stats.totalAdmins;
+                const s = await adminFetch('/stats');
+                document.getElementById('stat-users').textContent = s.totalUsers;
+                document.getElementById('stat-resumes').textContent = s.totalResumes;
+                document.getElementById('stat-templates').textContent = s.totalTemplates;
+                document.getElementById('stat-admins').textContent = s.totalAdmins;
             } catch (err) {
                 if (err.message.includes('Admins only') || err.message.includes('Access denied')) {
-                    alert('Access Denied: You are not an admin. Redirecting...');
+                    alert('Access Denied. Redirecting...');
                     window.location.href = '/dashboard';
                 }
             }
         }
 
+        // ── Users
         async function loadUsers() {
             try {
                 const users = await adminFetch('/users');
+                const selfId = currentUser._id || currentUser.id;
+                document.getElementById('user-count-badge').textContent = `${users.length} users`;
                 const container = document.getElementById('users-table-container');
-                document.getElementById('user-count-badge').textContent = `${users.length} user${users.length !== 1 ? 's' : ''}`;
-
-                if (users.length === 0) {
+                if (!users.length) {
                     container.innerHTML = `<div class="empty-state"><i class="fas fa-user-slash"></i><p>No users found</p></div>`;
                     return;
                 }
-
-                const selfId = currentUser._id || currentUser.id;
-                container.innerHTML = `
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>User</th>
-                                <th>Email</th>
-                                <th>Joined</th>
-                                <th>Role</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${users.map(u => `
-                                <tr id="row-${u._id}">
-                                    <td>
-                                        <div class="user-cell">
-                                            <div class="user-avatar">${u.name.charAt(0).toUpperCase()}</div>
-                                            <span class="user-name">${u.name}</span>
-                                        </div>
-                                    </td>
-                                    <td class="user-email">${u.email}</td>
-                                    <td class="date-cell">${new Date(u.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</td>
-                                    <td>
-                                        <span class="role-badge ${u.isAdmin ? 'badge-admin' : 'badge-user'}">
-                                            ${u.isAdmin ? '<i class="fas fa-star"></i> Admin' : 'User'}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <div class="actions-cell">
-                                            ${u._id !== selfId ? `
-                                                <button class="action-btn ${u.isAdmin ? 'btn-demote' : 'btn-promote'}"
-                                                    onclick="toggleAdmin('${u._id}', ${u.isAdmin})">
-                                                    ${u.isAdmin ? '↓ Demote' : '↑ Make Admin'}
-                                                </button>
-                                                <button class="action-btn btn-del" onclick="deleteUser('${u._id}', '${u.name.replace(/'/g, "\\'")}')">
-                                                    <i class="fas fa-trash"></i>
-                                                </button>
-                                            ` : `<span class="self-tag">You</span>`}
-                                        </div>
-                                    </td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                `;
-            } catch (err) {
-                showToast(err.message, 'error');
-            }
-        }
-
-        async function toggleAdmin(userId, currentStatus) {
-            try {
-                const res = await adminFetch(`/users/${userId}/toggle-admin`, { method: 'PUT' });
-                showToast(res.msg);
-                loadUsers();
-                loadStats();
+                container.innerHTML = `<table>
+                    <thead><tr><th>User</th><th>Email</th><th>Joined</th><th>Role</th><th>Actions</th></tr></thead>
+                    <tbody>${users.map(u => `
+                        <tr id="row-${u._id}">
+                            <td><div class="user-cell"><div class="user-avatar">${u.name.charAt(0).toUpperCase()}</div><span style="font-weight:600;">${u.name}</span></div></td>
+                            <td style="color:#64748B;">${u.email}</td>
+                            <td style="color:#94A3B8;font-size:0.82rem;">${new Date(u.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</td>
+                            <td><span class="role-badge ${u.isAdmin ? 'badge-admin' : 'badge-user'}">${u.isAdmin ? '<i class="fas fa-star"></i> Admin' : 'User'}</span></td>
+                            <td><div class="actions-cell">
+                                ${u._id !== selfId ? `
+                                    <button class="act-btn ${u.isAdmin ? 'ab-demote' : 'ab-promote'}" onclick="toggleAdmin('${u._id}',${u.isAdmin})">${u.isAdmin ? '↓ Demote' : '↑ Make Admin'}</button>
+                                    <button class="act-btn ab-del" onclick="deleteUser('${u._id}','${u.name.replace(/'/g, "\\'")}')" title="Delete user"><i class="fas fa-trash"></i></button>
+                                ` : `<span style="color:#CBD5E1;font-size:0.78rem;">You</span>`}
+                            </div></td>
+                        </tr>`).join('')}
+                    </tbody></table>`;
             } catch (err) { showToast(err.message, 'error'); }
         }
 
-        async function deleteUser(userId, userName) {
-            if (!confirm(`Delete "${userName}" and ALL their resumes? This cannot be undone.`)) return;
+        async function toggleAdmin(userId, isAdmin) {
+            try {
+                const res = await adminFetch(`/users/${userId}/toggle-admin`, { method: 'PUT' });
+                showToast(res.msg); loadUsers(); loadStats();
+            } catch (err) { showToast(err.message, 'error'); }
+        }
+
+        async function deleteUser(userId, name) {
+            if (!confirm(`Delete "${name}" and ALL their resumes? Cannot be undone.`)) return;
             try {
                 const res = await adminFetch(`/users/${userId}`, { method: 'DELETE' });
                 showToast(res.msg);
@@ -549,8 +847,155 @@
             } catch (err) { showToast(err.message, 'error'); }
         }
 
+        // ── File upload
+        let selectedFile = null;
+
+        function handleFileSelect(input) {
+            const file = input.files[0];
+            if (!file) return;
+            selectedFile = file;
+            const preview = document.getElementById('file-preview');
+            preview.innerHTML = `<div class="file-chosen"><i class="fas fa-check-circle"></i> <strong>${file.name}</strong> &nbsp;(${(file.size / 1024).toFixed(1)} KB)</div>`;
+            checkUploadReady();
+        }
+
+        ['dragover', 'dragleave', 'drop'].forEach(evt => {
+            document.getElementById('drop-zone').addEventListener(evt, e => {
+                e.preventDefault();
+                const dz = document.getElementById('drop-zone');
+                if (evt === 'dragover') dz.classList.add('drag-over');
+                else dz.classList.remove('drag-over');
+                if (evt === 'drop' && e.dataTransfer.files[0]) {
+                    const file = e.dataTransfer.files[0];
+                    selectedFile = file;
+                    document.getElementById('file-preview').innerHTML = `<div class="file-chosen"><i class="fas fa-check-circle"></i> <strong>${file.name}</strong> &nbsp;(${(file.size / 1024).toFixed(1)} KB)</div>`;
+                    checkUploadReady();
+                }
+            });
+        });
+
+        function checkUploadReady() {
+            const name = document.getElementById('tpl-name').value.trim();
+            document.getElementById('upload-btn').disabled = !selectedFile || !name;
+        }
+        document.getElementById('tpl-name').addEventListener('input', checkUploadReady);
+
+        async function uploadTemplate() {
+            const name = document.getElementById('tpl-name').value.trim();
+            const desc = document.getElementById('tpl-desc').value.trim();
+            if (!name || !selectedFile) return;
+            const token = localStorage.getItem('token');
+            const btn = document.getElementById('upload-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+            try {
+                const formData = new FormData();
+                formData.append('name', name);
+                formData.append('description', desc);
+                formData.append('templateFile', selectedFile);
+                const res = await fetch(`${BASE}/api/admin/templates`, {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: formData
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.msg);
+                showToast('Template uploaded successfully!');
+                document.getElementById('tpl-name').value = '';
+                document.getElementById('tpl-desc').value = '';
+                document.getElementById('file-preview').innerHTML = '';
+                selectedFile = null;
+                loadTemplates();
+                loadStats();
+            } catch (err) {
+                showToast(err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-upload"></i> Upload Template';
+                checkUploadReady();
+            }
+        }
+
+        // ── Templates list
+        async function loadTemplates() {
+            try {
+                const token = localStorage.getItem('token');
+                const res = await fetch(`${BASE}/api/admin/templates`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const templates = await res.json();
+                document.getElementById('tpl-count-badge').textContent = `${templates.length} templates`;
+                const grid = document.getElementById('templates-grid');
+                if (!templates.length) {
+                    grid.innerHTML = `<div class="empty-state"><i class="fas fa-layer-group"></i><p>No templates yet. Upload one above!</p></div>`;
+                    return;
+                }
+                grid.innerHTML = `<div class="tpl-grid">${templates.map(t => `
+                    <div class="tpl-admin-card" id="tpl-card-${t._id}">
+                        <div class="tpl-thumb" id="tpl-thumb-${t._id}">
+                            <i class="fas fa-spinner fa-spin" style="color:#94A3B8;font-size:1.5rem;"></i>
+                            ${!t.isActive ? `<div class="tpl-inactive-overlay"><span class="inactive-label">Hidden</span></div>` : ''}
+                        </div>
+                        <div class="tpl-body">
+                            <div class="tpl-name">${t.name}</div>
+                            <div class="tpl-desc">${t.description || ''}</div>
+                            <div class="tpl-date">${new Date(t.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</div>
+                            <div class="tpl-actions">
+                                <button class="act-btn ${t.isActive ? 'ab-demote' : 'ab-promote'}" onclick="toggleTemplate('${t._id}',${t.isActive})">
+                                    ${t.isActive ? '⊙ Hide' : '◎ Show'}
+                                </button>
+                                <button class="act-btn ab-del" onclick="deleteTemplate('${t._id}','${t.name.replace(/'/g, "\\'")}')" title="Delete">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>`).join('')}</div>`;
+
+                // Load preview images lazily
+                templates.forEach(t => loadTemplateThumb(t._id));
+            } catch (err) { showToast(err.message, 'error'); }
+        }
+
+        async function loadTemplateThumb(id) {
+            const token = localStorage.getItem('token');
+            try {
+                const res = await fetch(`${BASE}/api/admin/templates/${id}/preview`, { headers: { 'Authorization': `Bearer ${token}` } });
+                // If the route doesn't exist yet, fall back to the full templates fetch
+                // We'll use the public route instead
+                const pubRes = await fetch(`${BASE}/api/templates/${id}`, { headers: { 'Authorization': `Bearer ${token}` } });
+                if (pubRes.ok) {
+                    const t = await pubRes.json();
+                    const container = document.getElementById(`tpl-thumb-${id}`);
+                    if (container) {
+                        const isPdf = t.fileType === 'application/pdf';
+                        const currentOverlay = container.querySelector('.tpl-inactive-overlay')?.outerHTML || '';
+                        container.innerHTML = isPdf
+                            ? `<i class="fas fa-file-pdf tpl-pdf-icon"></i><p style="font-size:0.75rem;color:#64748B;margin-top:0.5rem;">PDF Template</p>${currentOverlay}`
+                            : `<img src="${t.previewImage}" alt="${t.name}" />${currentOverlay}`;
+                    }
+                }
+            } catch (e) { /* silent */ }
+        }
+
+        async function toggleTemplate(id, isActive) {
+            try {
+                const res = await adminFetch(`/templates/${id}/toggle`, { method: 'PUT' });
+                showToast(res.msg); loadTemplates(); loadStats();
+            } catch (err) { showToast(err.message, 'error'); }
+        }
+
+        async function deleteTemplate(id, name) {
+            if (!confirm(`Delete template "${name}"? Users will no longer see it.`)) return;
+            try {
+                const res = await adminFetch(`/templates/${id}`, { method: 'DELETE' });
+                showToast(res.msg);
+                document.getElementById(`tpl-card-${id}`)?.remove();
+                loadStats();
+            } catch (err) { showToast(err.message, 'error'); }
+        }
+
+        // Init
         loadStats();
         loadUsers();
+        loadTemplates();
     </script>
 </body>
 

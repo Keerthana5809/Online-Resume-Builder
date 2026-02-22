@@ -8,6 +8,7 @@ const ResumeSchema = new mongoose.Schema({
     },
     personalDetails: {
         name: String,
+        jobTitle: String,
         email: String,
         phone: String,
         address: String,
@@ -39,7 +40,16 @@ const ResumeSchema = new mongoose.Schema({
     languages: [String],
     templateType: {
         type: String,
-        default: 'template1'
+        default: 'modern'
+    },
+    templateId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Template',
+        default: null
+    },
+    accentColor: {
+        type: String,
+        default: '#2563EB'
     },
     createdAt: {
         type: Date,
