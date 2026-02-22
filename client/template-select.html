@@ -23,6 +23,7 @@
             min-height: 100vh;
         }
 
+        /* ── Nav */
         .picker-nav {
             background: #fff;
             padding: 1rem 2rem;
@@ -64,13 +65,14 @@
             color: #DC2626;
         }
 
+        /* ── Layout */
         .picker-container {
             max-width: 1100px;
             margin: 0 auto;
             padding: 2.5rem 1.5rem 5rem;
         }
 
-        /* Steps */
+        /* ── Steps bar */
         .steps-bar {
             display: flex;
             justify-content: center;
@@ -143,11 +145,10 @@
             background: #16A34A;
         }
 
-        /* Header */
+        /* ── Step header */
         .step-header {
             text-align: center;
             margin-bottom: 2rem;
-            animation: fadeInUp 0.5s ease;
         }
 
         .step-badge {
@@ -176,7 +177,9 @@
             font-size: 0.95rem;
         }
 
-        /* Template grid */
+        /* ═══════════════════════════════════════
+           STEP 1: Template grid
+        ════════════════════════════════════════*/
         #step-template {
             animation: fadeInUp 0.5s ease;
         }
@@ -187,6 +190,45 @@
             gap: 1.25rem;
         }
 
+        /* Skeleton loader */
+        .skeleton-card {
+            background: #fff;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .skeleton-img {
+            height: 240px;
+            background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        .skeleton-text {
+            padding: 0.9rem 1rem;
+        }
+
+        .skeleton-line {
+            height: 12px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            margin-bottom: 0.5rem;
+        }
+
+        .skeleton-line.short {
+            width: 55%;
+        }
+
+        @keyframes shimmer {
+            to {
+                background-position: -200% 0;
+            }
+        }
+
+        /* Template card */
         .tpl-card {
             background: #fff;
             border: 2px solid #E2E8F0;
@@ -233,7 +275,6 @@
             transform: scale(1);
         }
 
-        /* Template preview area */
         .tpl-preview {
             height: 240px;
             overflow: hidden;
@@ -252,181 +293,373 @@
             object-position: top;
         }
 
-        .tpl-preview .pdf-badge {
+        .pdf-badge {
             text-align: center;
             color: #64748B;
         }
 
-        .tpl-preview .pdf-badge i {
+        .pdf-badge i {
             font-size: 3rem;
             color: #DC2626;
             display: block;
             margin-bottom: 0.5rem;
         }
 
-        .tpl-preview .pdf-badge p {
-            font-size: 0.82rem;
-            color: #64748B;
-        }
-
         .tpl-info {
             padding: 0.9rem 1rem;
         }
 
-        .tpl-name {
+        .tpl-name-label {
             font-weight: 700;
             font-size: 0.92rem;
             color: #1E293B;
             margin-bottom: 0.2rem;
         }
 
-        .tpl-desc {
+        .tpl-desc-label {
             font-size: 0.78rem;
             color: #64748B;
         }
 
-        /* Skeleton loading */
-        .skeleton-card {
+        /* ═══════════════════════════════════════
+            STEP 2: Live Color Preview
+        ════════════════════════════════════════*/
+        #step-color {
+            display: none;
+            animation: fadeInUp 0.4s ease;
+        }
+
+        .color-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        /* Left: live preview pane */
+        .preview-pane {
             background: #fff;
             border: 1px solid #E2E8F0;
             border-radius: 12px;
             overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
 
-        .skeleton-img {
-            height: 240px;
-            background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
+        .preview-pane-head {
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid #F1F5F9;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        .skeleton-text {
+        .preview-pane-head span {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #64748B;
+        }
+
+        .preview-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        /* The live mini-resume inside the preview pane */
+        .live-resume-wrap {
+            padding: 1.2rem;
+        }
+
+        .live-resume {
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            overflow: hidden;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.72rem;
+            background: white;
+            transition: all 0.3s;
+        }
+
+        .lr-header {
+            padding: 0.9rem 1rem;
+            background: var(--accent, #2563EB);
+            color: white;
+            transition: background 0.3s;
+        }
+
+        .lr-name {
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+        }
+
+        .lr-title {
+            font-size: 0.7rem;
+            opacity: 0.9;
+            margin-top: 0.2rem;
+        }
+
+        .lr-contact {
+            font-size: 0.65rem;
+            opacity: 0.8;
+            margin-top: 0.4rem;
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .lr-body {
             padding: 0.9rem 1rem;
         }
 
-        .skeleton-line {
-            height: 12px;
-            border-radius: 4px;
-            background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-            margin-bottom: 0.5rem;
+        .lr-section {
+            margin-bottom: 0.75rem;
         }
 
-        .skeleton-line.short {
-            width: 60%;
+        .lr-section-title {
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent, #2563EB);
+            border-bottom: 1.5px solid var(--accent, #2563EB);
+            padding-bottom: 0.25rem;
+            margin-bottom: 0.4rem;
+            transition: color 0.3s, border-color 0.3s;
         }
 
-        @keyframes shimmer {
-            to {
-                background-position: -200% 0;
-            }
-        }
-
-        /* Step 2: Color */
-        #step-color {
-            display: none;
-            animation: fadeInUp 0.5s ease;
-        }
-
-        .chosen-preview {
-            background: #fff;
-            border: 1px solid #E2E8F0;
-            border-radius: 12px;
-            padding: 1.5rem;
-            text-align: center;
-            margin-bottom: 2rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-        }
-
-        .chosen-preview h3 {
-            color: #1E293B;
+        .lr-job-title {
             font-weight: 700;
-            margin-bottom: 0.25rem;
+            font-size: 0.72rem;
         }
 
-        .chosen-name {
-            color: #2563EB;
-        }
-
-        .chosen-preview p {
+        .lr-job-company {
+            font-size: 0.65rem;
             color: #64748B;
-            font-size: 0.88rem;
+            margin-bottom: 0.2rem;
         }
 
-        .colors-section {
+        .lr-body-text {
+            font-size: 0.65rem;
+            color: #475569;
+            line-height: 1.5;
+        }
+
+        .lr-skill-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3rem;
+        }
+
+        .lr-skill {
+            padding: 0.15rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.62rem;
+            font-weight: 600;
+            background: var(--accent-light, #EFF6FF);
+            color: var(--accent, #2563EB);
+            border: 1px solid var(--accent-border, #BFDBFE);
+            transition: background 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        /* Template image (when PDF or image is uploaded) */
+        .tpl-img-preview {
+            width: 100%;
+            max-height: 400px;
+            object-fit: cover;
+            object-position: top;
+            display: block;
+        }
+
+        .tpl-pdf-msg {
+            padding: 2rem;
+            text-align: center;
+            color: #64748B;
+        }
+
+        .tpl-pdf-msg i {
+            font-size: 2.5rem;
+            color: #DC2626;
+            display: block;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Color overlay on image */
+        .img-color-overlay {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .img-color-overlay::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            height: 40px;
+            background: var(--overlay-color, #2563EB);
+            mix-blend-mode: multiply;
+            opacity: 0.5;
+            transition: background 0.3s;
+            pointer-events: none;
+        }
+
+        /* Right: color picker pane */
+        .color-pane {
             background: #fff;
             border: 1px solid #E2E8F0;
             border-radius: 12px;
-            padding: 1.5rem;
+            padding: 1.4rem;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
         }
 
-        .colors-section h4 {
-            font-size: 0.85rem;
+        .color-pane h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #1E293B;
+            margin-bottom: 0.3rem;
+        }
+
+        .color-pane .sub {
+            font-size: 0.82rem;
+            color: #64748B;
+            margin-bottom: 1.2rem;
+        }
+
+        .selected-template-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.2rem;
+            padding: 0.6rem 0.9rem;
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+        }
+
+        .tpl-thumb-tiny {
+            width: 40px;
+            height: 30px;
+            border-radius: 4px;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: #E2E8F0;
+        }
+
+        .tpl-thumb-tiny img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .stl-name {
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #1E293B;
+        }
+
+        .stl-change {
+            font-size: 0.75rem;
+            color: #2563EB;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .color-section-label {
+            font-size: 0.78rem;
             font-weight: 700;
             color: #64748B;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            margin-bottom: 1.2rem;
+            margin-bottom: 0.9rem;
         }
 
         .colors-grid {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
         }
 
         .clr-wrap {
             text-align: center;
+            cursor: pointer;
         }
 
         .clr-swatch {
-            width: 44px;
-            height: 44px;
+            width: 100%;
+            aspect-ratio: 1;
             border-radius: 50%;
-            cursor: pointer;
-            transition: all 0.25s;
+            margin: 0 auto;
             border: 3px solid transparent;
             position: relative;
-            margin: 0 auto;
+            transition: all 0.25s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .clr-swatch:hover {
-            transform: scale(1.15);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transform: scale(1.12);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
 
         .clr-swatch.active {
             border-color: #1E293B;
-            transform: scale(1.12);
+            transform: scale(1.1);
             box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.15);
         }
 
-        .clr-swatch .check {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .clr-check {
             color: white;
-            font-size: 1rem;
+            font-size: 0.85rem;
             opacity: 0;
-            drop-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            transition: opacity 0.2s;
         }
 
-        .clr-swatch.active .check {
+        .clr-swatch.active .clr-check {
             opacity: 1;
         }
 
         .clr-name {
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: #94A3B8;
-            margin-top: 0.4rem;
+            margin-top: 0.3rem;
+            line-height: 1.2;
         }
 
-        /* Buttons */
+        .color-hex-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.7rem 1rem;
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+        }
+
+        .hex-dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            transition: background 0.3s;
+        }
+
+        .hex-text {
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: #1E293B;
+            font-family: monospace;
+        }
+
+        .hex-label {
+            font-size: 0.75rem;
+            color: #64748B;
+            margin-left: auto;
+        }
+
+        /* ── Navigation buttons */
         .nav-buttons {
             display: flex;
             justify-content: space-between;
@@ -455,6 +688,7 @@
         .btn-back:hover {
             border-color: #CBD5E1;
             background: #F8FAFC;
+            color: #1E293B;
         }
 
         .btn-next {
@@ -487,6 +721,7 @@
             text-align: center;
             padding: 3rem;
             color: #94A3B8;
+            grid-column: 1/-1;
         }
 
         .empty-state i {
@@ -514,13 +749,21 @@
             }
         }
 
-        @media (max-width: 640px) {
+        @media (max-width: 768px) {
+            .color-layout {
+                grid-template-columns: 1fr;
+            }
+
             .step-label {
                 display: none;
             }
 
             .template-grid-pick {
                 grid-template-columns: 1fr 1fr;
+            }
+
+            .colors-grid {
+                grid-template-columns: repeat(4, 1fr);
             }
         }
     </style>
@@ -533,7 +776,7 @@
     </nav>
 
     <div class="picker-container">
-        <!-- Steps -->
+        <!-- Steps indicator -->
         <div class="steps-bar">
             <div class="step-item">
                 <div class="step-circle active" id="s1">1</div>
@@ -551,16 +794,16 @@
             </div>
         </div>
 
-        <!-- Step 1: Template -->
+        <!-- ═══ STEP 1: Template Selection ═══ -->
         <div id="step-template">
             <div class="step-header">
                 <div class="step-badge">Step 1 of 3</div>
                 <h1>Choose Your Template</h1>
                 <p>Pick a design that best represents your professional style</p>
             </div>
+
+            <!-- Skeleton cards – rendered by JS, no template literals in HTML -->
             <div class="template-grid-pick" id="templates-grid">
-                <!-- skeleton placeholders -->
-                ${[1,2,3,4,5,6].map(() => `
                 <div class="skeleton-card">
                     <div class="skeleton-img"></div>
                     <div class="skeleton-text">
@@ -568,8 +811,29 @@
                         <div class="skeleton-line short"></div>
                     </div>
                 </div>
-                `).join('')}
+                <div class="skeleton-card">
+                    <div class="skeleton-img"></div>
+                    <div class="skeleton-text">
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-line short"></div>
+                    </div>
+                </div>
+                <div class="skeleton-card">
+                    <div class="skeleton-img"></div>
+                    <div class="skeleton-text">
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-line short"></div>
+                    </div>
+                </div>
+                <div class="skeleton-card">
+                    <div class="skeleton-img"></div>
+                    <div class="skeleton-text">
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-line short"></div>
+                    </div>
+                </div>
             </div>
+
             <div class="nav-buttons">
                 <a href="/dashboard" class="btn-back"><i class="fas fa-arrow-left"></i> Back</a>
                 <button class="btn-next" id="next-step1" onclick="goToStep2()" disabled>
@@ -578,21 +842,103 @@
             </div>
         </div>
 
-        <!-- Step 2: Color -->
+        <!-- ═══ STEP 2: Color Picker with Live Preview ═══ -->
         <div id="step-color">
             <div class="step-header">
                 <div class="step-badge">Step 2 of 3</div>
                 <h1>Pick an Accent Color</h1>
-                <p>This color will be applied to headings and accents in your resume</p>
+                <p>Watch your template update live as you pick a color</p>
             </div>
-            <div class="chosen-preview">
-                <h3>Template: <span class="chosen-name" id="chosen-tpl-name">—</span></h3>
-                <p>Now choose your accent color below</p>
+
+            <div class="color-layout">
+                <!-- Left: Live Preview -->
+                <div>
+                    <div class="preview-pane">
+                        <div class="preview-pane-head">
+                            <div class="preview-dot" id="dot1" style="background:#EF4444;"></div>
+                            <div class="preview-dot" style="background:#F59E0B;"></div>
+                            <div class="preview-dot" style="background:#22C55E;"></div>
+                            <span style="margin-left:0.5rem;">Live Preview</span>
+                        </div>
+
+                        <!-- If template has a preview image, show it with color overlay -->
+                        <div id="img-preview-wrap" style="display:none;" class="img-color-overlay">
+                            <img id="tpl-preview-img" class="tpl-img-preview" src="" alt="Template Preview" />
+                            <div id="color-strip"
+                                style="position:absolute;left:0;right:0;top:0;height:44px;opacity:0.85;transition:background 0.25s;">
+                            </div>
+                        </div>
+
+                        <!-- Mini live-rendered resume (always shown below, or as fallback) -->
+                        <div class="live-resume-wrap">
+                            <div class="live-resume" id="live-resume">
+                                <div class="lr-header" id="lr-header">
+                                    <div class="lr-name">Your Name</div>
+                                    <div class="lr-title">Job Title · Company</div>
+                                    <div class="lr-contact">
+                                        <span>email@example.com</span>
+                                        <span>+1 234 567 8901</span>
+                                        <span>City, Country</span>
+                                    </div>
+                                </div>
+                                <div class="lr-body">
+                                    <div class="lr-section">
+                                        <div class="lr-section-title" id="lr-exp-title">Experience</div>
+                                        <div class="lr-job-title">Senior Software Engineer</div>
+                                        <div class="lr-job-company">Google · 2020 – Present</div>
+                                        <div class="lr-body-text">Led development of scalable systems serving millions
+                                            of users daily.</div>
+                                    </div>
+                                    <div class="lr-section">
+                                        <div class="lr-section-title" id="lr-edu-title">Education</div>
+                                        <div class="lr-job-title">B.S. Computer Science</div>
+                                        <div class="lr-job-company">MIT · 2016 – 2020</div>
+                                    </div>
+                                    <div class="lr-section">
+                                        <div class="lr-section-title" id="lr-skills-title">Skills</div>
+                                        <div class="lr-skill-row">
+                                            <span class="lr-skill" id="lr-s1">React</span>
+                                            <span class="lr-skill" id="lr-s2">Node.js</span>
+                                            <span class="lr-skill" id="lr-s3">Python</span>
+                                            <span class="lr-skill" id="lr-s4">AWS</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Color Picker -->
+                <div>
+                    <div class="color-pane">
+                        <!-- Selected template info -->
+                        <div class="selected-template-label">
+                            <div class="tpl-thumb-tiny" id="stl-thumb">
+                                <img id="stl-thumb-img" src="" alt="" />
+                            </div>
+                            <div>
+                                <div class="stl-name" id="stl-name-label">—</div>
+                                <span class="stl-change" onclick="goToStep1()">Change template</span>
+                            </div>
+                        </div>
+
+                        <h3>Accent Color</h3>
+                        <p class="sub">Click a color to see it applied live on your resume preview</p>
+
+                        <div class="color-section-label">Choose a color</div>
+                        <div class="colors-grid" id="colors-grid"></div>
+
+                        <!-- Current color display -->
+                        <div class="color-hex-bar" id="hex-bar">
+                            <div class="hex-dot" id="hex-dot" style="background:#2563EB;"></div>
+                            <span class="hex-text" id="hex-text">#2563EB</span>
+                            <span class="hex-label">Selected color</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="colors-section">
-                <h4>Accent Colors</h4>
-                <div class="colors-grid" id="colors-grid"></div>
-            </div>
+
             <div class="nav-buttons">
                 <button class="btn-back" onclick="goToStep1()"><i class="fas fa-arrow-left"></i> Back</button>
                 <button class="btn-next" id="next-step2" onclick="goToBuilder()" disabled>
@@ -606,9 +952,12 @@
     <script>
         if (!localStorage.getItem('token')) window.location.href = '/login';
 
-        const BASE = (typeof RENDER_BACKEND_URL !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1')
+        const BASE = (typeof RENDER_BACKEND_URL !== 'undefined' &&
+            window.location.hostname !== 'localhost' &&
+            window.location.hostname !== '127.0.0.1')
             ? RENDER_BACKEND_URL : '';
 
+        // ═══ Color palette ═══
         const COLORS = [
             { name: 'Ocean Blue', hex: '#2563EB' }, { name: 'Indigo', hex: '#4F46E5' },
             { name: 'Violet', hex: '#7C3AED' }, { name: 'Teal', hex: '#0D9488' },
@@ -620,43 +969,65 @@
 
         let selectedTemplateId = null;
         let selectedTemplateName = '';
-        let selectedColor = null;
+        let selectedTemplateImg = '';
+        let selectedTemplateType = '';
+        let selectedColor = '#2563EB';
 
-        // ── Load templates from backend
+        // ══════════════════════════════════════
+        // STEP 1: Load templates
+        // ══════════════════════════════════════
         async function loadTemplates() {
             const token = localStorage.getItem('token');
             try {
-                const res = await fetch(`${BASE}/api/templates`, { headers: { 'Authorization': `Bearer ${token}` } });
+                const res = await fetch(`${BASE}/api/templates`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
                 const templates = await res.json();
                 const grid = document.getElementById('templates-grid');
 
-                if (!res.ok || !templates.length) {
-                    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
-                        <i class="fas fa-layer-group"></i>
-                        <p>No templates available yet.</p>
-                        <p style="margin-top:0.5rem;font-size:0.85rem;">Ask an admin to upload templates from the <a href="/admin">Admin Panel</a>.</p>
-                    </div>`;
+                if (!res.ok || !Array.isArray(templates) || templates.length === 0) {
+                    grid.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-layer-group"></i>
+                            <p>No templates available yet.</p>
+                            <p style="margin-top:0.5rem;font-size:0.85rem;">
+                                Ask an admin to upload templates from the <a href="/admin">Admin Panel</a>.
+                            </p>
+                        </div>`;
                     return;
                 }
 
                 grid.innerHTML = templates.map(t => `
-                    <div class="tpl-card" data-id="${t._id}" data-name="${t.name}" onclick="selectTemplate(this)">
+                    <div class="tpl-card"
+                        data-id="${t._id}"
+                        data-name="${escHtml(t.name)}"
+                        data-img="${t.fileType !== 'application/pdf' ? escHtml(t.previewImage) : ''}"
+                        data-type="${escHtml(t.fileType)}"
+                        onclick="selectTemplate(this)">
                         <div class="selected-check"><i class="fas fa-check"></i></div>
                         <div class="tpl-preview">
                             ${t.fileType === 'application/pdf'
-                        ? `<div class="pdf-badge"><i class="fas fa-file-pdf"></i><p>PDF Template</p></div>`
-                        : `<img src="${t.previewImage}" alt="${t.name}" loading="lazy" />`
+                        ? `<div class="pdf-badge"><i class="fas fa-file-pdf"></i><p style="font-size:0.78rem;">PDF Template</p></div>`
+                        : `<img src="${escHtml(t.previewImage)}" alt="${escHtml(t.name)}" loading="lazy" />`
                     }
                         </div>
                         <div class="tpl-info">
-                            <div class="tpl-name">${t.name}</div>
-                            <div class="tpl-desc">${t.description || ''}</div>
+                            <div class="tpl-name-label">${escHtml(t.name)}</div>
+                            <div class="tpl-desc-label">${escHtml(t.description || '')}</div>
                         </div>
-                    </div>
-                `).join('');
+                    </div>`).join('');
             } catch (err) {
-                document.getElementById('templates-grid').innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><i class="fas fa-exclamation-circle"></i><p>Failed to load templates. Please refresh.</p></div>`;
+                document.getElementById('templates-grid').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <p>Failed to load templates. Please refresh the page.</p>
+                    </div>`;
             }
+        }
+
+        function escHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
 
         function selectTemplate(el) {
@@ -664,17 +1035,21 @@
             el.classList.add('selected');
             selectedTemplateId = el.dataset.id;
             selectedTemplateName = el.dataset.name;
+            selectedTemplateImg = el.dataset.img;
+            selectedTemplateType = el.dataset.type;
             document.getElementById('next-step1').disabled = false;
         }
 
-        // ── Step navigation
+        // ══════════════════════════════════════
+        // STEP 2: Color picker
+        // ══════════════════════════════════════
         function goToStep2() {
             if (!selectedTemplateId) return;
+
             document.getElementById('step-template').style.display = 'none';
             document.getElementById('step-color').style.display = 'block';
-            document.getElementById('chosen-tpl-name').textContent = selectedTemplateName;
 
-            // Update step indicators
+            // Update steps
             document.getElementById('s1').className = 'step-circle done';
             document.getElementById('s1').innerHTML = '<i class="fas fa-check" style="font-size:0.75rem;"></i>';
             document.getElementById('s1l').className = 'step-label done';
@@ -682,7 +1057,28 @@
             document.getElementById('s2').className = 'step-circle active';
             document.getElementById('s2l').className = 'step-label active';
 
+            // Show template thumbnail in the "selected" label
+            document.getElementById('stl-name-label').textContent = selectedTemplateName;
+            if (selectedTemplateImg) {
+                document.getElementById('stl-thumb-img').src = selectedTemplateImg;
+                document.getElementById('stl-thumb').style.display = 'block';
+            } else {
+                document.getElementById('stl-thumb').style.display = 'none';
+            }
+
+            // Show template image in the preview pane if it's an image
+            const imgWrap = document.getElementById('img-preview-wrap');
+            if (selectedTemplateImg) {
+                imgWrap.style.display = 'block';
+                document.getElementById('tpl-preview-img').src = selectedTemplateImg;
+                document.getElementById('color-strip').style.background = selectedColor;
+            } else {
+                imgWrap.style.display = 'none';
+            }
+
+            // Render color swatches
             renderColors();
+            applyColorToPreview(selectedColor);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -698,36 +1094,70 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // ── Color picker
         function renderColors() {
             document.getElementById('colors-grid').innerHTML = COLORS.map(c => `
-                <div class="clr-wrap">
-                    <div class="clr-swatch ${selectedColor === c.hex ? 'active' : ''}"
-                        style="background:${c.hex};"
-                        onclick="pickColor(this, '${c.hex}')">
-                        <span class="check"><i class="fas fa-check"></i></span>
+                <div class="clr-wrap" onclick="pickColor('${c.hex}', this)" title="${c.name}">
+                    <div class="clr-swatch ${c.hex === selectedColor ? 'active' : ''}" style="background:${c.hex};">
+                        <i class="fas fa-check clr-check"></i>
                     </div>
                     <div class="clr-name">${c.name}</div>
-                </div>
-            `).join('');
+                </div>`).join('');
         }
 
-        function pickColor(el, hex) {
-            document.querySelectorAll('.clr-swatch').forEach(s => s.classList.remove('active'));
-            el.classList.add('active');
+        function pickColor(hex, wrapEl) {
             selectedColor = hex;
+            // Update swatches
+            document.querySelectorAll('.clr-swatch').forEach(s => s.classList.remove('active'));
+            wrapEl.querySelector('.clr-swatch').classList.add('active');
+            // Update hex bar
+            document.getElementById('hex-dot').style.background = hex;
+            document.getElementById('hex-text').textContent = hex;
+            // Apply to live resume preview
+            applyColorToPreview(hex);
+            // Enable next button
             document.getElementById('next-step2').disabled = false;
         }
 
-        // ── Go to builder
+        function applyColorToPreview(hex) {
+            // Compute a lighter tint for skill chip bg
+            const light = hex + '18'; // ~10% opacity
+            const border = hex + '44'; // ~27% opacity
+
+            // Update the mini resume CSS variables
+            const lr = document.getElementById('live-resume');
+            lr.style.setProperty('--accent', hex);
+            lr.style.setProperty('--accent-light', light);
+            lr.style.setProperty('--accent-border', border);
+
+            // Update specific elements directly for cross-browser compatibility
+            document.getElementById('lr-header').style.background = hex;
+            ['lr-exp-title', 'lr-edu-title', 'lr-skills-title'].forEach(id => {
+                const el = document.getElementById(id);
+                el.style.color = hex;
+                el.style.borderColor = hex;
+            });
+            ['lr-s1', 'lr-s2', 'lr-s3', 'lr-s4'].forEach(id => {
+                const el = document.getElementById(id);
+                el.style.color = hex;
+                el.style.borderColor = border;
+                el.style.background = light;
+            });
+
+            // Update color strip on template image preview
+            const strip = document.getElementById('color-strip');
+            if (strip) strip.style.background = hex;
+        }
+
         function goToBuilder() {
-            if (!selectedTemplateId || !selectedColor) return;
+            if (!selectedTemplateId) return;
             const color = encodeURIComponent(selectedColor);
             window.location.href = `/builder?templateId=${selectedTemplateId}&color=${color}`;
         }
 
         // Init
         loadTemplates();
+        // Apply default color to the mini resume on load
+        applyColorToPreview(selectedColor);
     </script>
 </body>
 
