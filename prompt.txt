@@ -1,0 +1,140 @@
+Build a complete Online Resume Builder Web Application.
+
+Tech Stack:
+Frontend: HTML5, CSS3, Vanilla JavaScript (ES6)
+Backend: Node.js + Express.js
+Database: MongoDB Atlas (cloud)
+Authentication: JWT + bcrypt
+PDF Generation: jsPDF
+
+Do NOT use React, Angular, Vue, or any frontend framework.
+
+====================================
+CORE REQUIREMENTS
+====================================
+
+1. Authentication System
+- Register page (name, email, password)
+- Login page
+- Password hashing using bcrypt
+- JWT token generation on login
+- Protected routes using JWT middleware
+- Logout functionality
+- Proper frontend + backend validation
+- Error handling messages
+
+2. Dashboard
+After login redirect to dashboard.
+Dashboard should display:
+- Create New Resume button
+- List of Saved Resumes
+- Edit Resume
+- Delete Resume
+- Download Resume as PDF
+
+3. Resume Builder Form
+Sections:
+- Personal Details (name, email, phone, address, LinkedIn, GitHub)
+- Professional Summary
+- Education (dynamic add/remove entries)
+- Experience (dynamic add/remove entries)
+- Skills (comma separated or tag input)
+- Projects
+- Certifications
+- Languages
+
+4. Resume Templates
+- At least 2 professional templates
+- Template selection dropdown
+- Live preview section
+- Switching templates should not lose data
+
+5. PDF Generation
+- Use jsPDF
+- Proper spacing and formatting
+- Multi-page support
+- File name format: username_resume.pdf
+
+====================================
+DATABASE STRUCTURE
+====================================
+
+User Schema:
+- name
+- email (unique)
+- password
+- createdAt
+
+Resume Schema:
+- userId (ObjectId reference to User)
+- personalDetails
+- summary
+- education[]
+- experience[]
+- skills[]
+- projects[]
+- certifications[]
+- languages[]
+- templateType
+- createdAt
+- updatedAt
+
+====================================
+PROJECT STRUCTURE
+====================================
+
+/client
+  /css
+  /js
+  index.html
+  login.html
+  register.html
+  dashboard.html
+  builder.html
+
+/server
+  /controllers
+  /models
+  /routes
+  /middleware
+  server.js
+
+====================================
+UI DESIGN REQUIREMENTS
+====================================
+
+- Fully responsive
+- Professional clean layout
+- Soft shadows
+- Rounded corners (8px)
+- Color palette:
+  Primary: #2563EB
+  Background: #F8FAFC
+  Dark Text: #1E293B
+- Modern navbar
+- Toast notifications
+- Loading spinner
+
+====================================
+SECURITY
+====================================
+
+- Use JWT middleware
+- Protect resume routes
+- Validate all inputs
+- Use environment variables (.env)
+- Prevent duplicate emails
+- Rate limit login attempts
+
+====================================
+DELIVERABLES
+====================================
+
+- Full backend code
+- All frontend files
+- MongoDB Atlas connection setup
+- Step-by-step setup instructions
+- Deployment guide (Render backend + Vercel frontend)
+- README file
+
+Code must be clean, modular, and production-ready.

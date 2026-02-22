@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - CarizmaX</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <nav>
+        <a href="/" class="logo"><i class="fas fa-file-invoice"></i> CarizmaX</a>
+        <div class="nav-links">
+            <span id="user-name" style="font-weight: 600; color: var(--text-dark); margin-right: 1rem;"></span>
+            <a href="#" onclick="api.auth.logout()" class="btn btn-outline">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="dashboard-header">
+            <h1>Your Resumes</h1>
+            <a href="/builder" class="btn btn-primary"><i class="fas fa-plus"></i> Create New Resume</a>
+        </div>
+
+        <div id="resume-grid" class="resume-grid">
+            <!-- Resumes will be loaded here -->
+        </div>
+
+        <div id="no-resumes" style="text-align: center; margin-top: 4rem; display: none;">
+            <i class="fas fa-file-alt" style="font-size: 4rem; color: var(--border-color); margin-bottom: 1rem;"></i>
+            <h3>No resumes found</h3>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Create your first resume to get started!</p>
+            <a href="/builder" class="btn btn-primary">Create Resume</a>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        // Check authentication
+        if (!localStorage.getItem('token')) {
+            window.location.href = '/login';
+        }
+
+        const user = api.auth.getUser();
+        if (user) {
+            document.getElementById('user-name').textContent = `Hello, ${user.name}`;
+        }
+
+        async function loadResumes() {
+            showLoader(true);
+            try {
+                const resumes = await api.resumes.getAll();
+                const grid = document.getElementById('resume-grid');
+                const emptyState = document.getElementById('no-resumes');
+
+                if (resumes.length === 0) {
+                    emptyState.style.display = 'block';
+                    grid.style.display = 'none';
+                    return;
+                }
+
+                emptyState.style.display = 'none';
+                grid.style.display = 'grid';
+                grid.innerHTML = resumes.map(resume => `
+                    <div class="resume-card">
+                        <h3>${resume.personalDetails.name || 'Untitled Resume'}</h3>
+                        <p>Last updated: ${new Date(resume.updatedAt).toLocaleDateString()}</p>
+                        <div class="resume-actions">
+                            <a href="/builder?id=${resume._id}" class="btn btn-outline" style="flex: 1;"><i class="fas fa-edit"></i> Edit</a>
+                            <button onclick="deleteResume('${resume._id}')" class="btn btn-danger" style="flex: 0 0 45px;"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                showToast(err.message, 'error');
+            } finally {
+                showLoader(false);
+            }
+        }
+
+        async function deleteResume(id) {
+            if (confirm('Are you sure you want to delete this resume?')) {
+                showLoader(true);
+                try {
+                    await api.resumes.delete(id);
+                    showToast('Resume deleted successfully');
+                    loadResumes();
+                } catch (err) {
+                    showToast(err.message, 'error');
+                } finally {
+                    showLoader(false);
+                }
+            }
+        }
+
+        loadResumes();
+    </script>
+</body>
+
+</html>
