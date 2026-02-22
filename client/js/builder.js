@@ -5,24 +5,30 @@ if (!localStorage.getItem('token')) {
 
 const urlParams = new URLSearchParams(window.location.search);
 const resumeId = urlParams.get('id');
-// Support both templateId (MongoDB ref to uploaded template) and legacy template name
 const urlTemplateId = urlParams.get('templateId') || null;
 const urlTemplate = urlParams.get('template') || 'modern';
 const urlColor = decodeURIComponent(urlParams.get('color') || '#2563EB');
 
-// Apply chosen accent color as CSS variable
-document.documentElement.style.setProperty('--primary-color', urlColor);
-document.documentElement.style.setProperty('--primary-hover', urlColor);
+// Helper to convert hex to rgba
+function hexToRgba(hex, alpha = 1) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+// Separate accent from primary UI color
+function updateAccentVars(hex) {
+    document.documentElement.style.setProperty('--accent-color', hex);
+    document.documentElement.style.setProperty('--accent-light', hexToRgba(hex, 0.1));
+    document.documentElement.style.setProperty('--accent-border', hexToRgba(hex, 0.3));
+}
+
+updateAccentVars(urlColor);
 
 let resumeData = {
     personalDetails: {
-        name: '',
-        jobTitle: '',
-        email: '',
-        phone: '',
-        address: '',
-        linkedin: '',
-        github: ''
+        name: '', jobTitle: '', email: '', phone: '', address: '', linkedin: '', github: ''
     },
     summary: '',
     education: [],
@@ -31,18 +37,72 @@ let resumeData = {
     skills: [],
     certifications: [],
     languages: [],
-    templateId: urlTemplateId,   // MongoDB ObjectId of admin-uploaded template
-    templateType: urlTemplate,   // fallback legacy field
+    templateId: urlTemplateId,
+    templateType: urlTemplate,
     accentColor: urlColor
 };
 
+async function updateTemplateBackground(templateId) {
+    if (!templateId) return;
+    try {
+        const template = await api.templates.getById(templateId);
+        const preview = document.getElementById('resume-preview');
+        if (preview && template && template.previewImage) {
+            preview.style.backgroundImage = `url(${template.previewImage})`;
+            preview.style.backgroundSize = 'contain';
+            preview.style.backgroundRepeat = 'no-repeat';
+            preview.style.backgroundPosition = 'center';
+            preview.style.backgroundColor = 'transparent';
+            preview.style.backgroundBlendMode = 'normal';
+
+            // If template has an explicit type from DB, use it
+            if (template.type) {
+                resumeData.templateType = template.type;
+            } else {
+                // Fallback Detection: try to find the best layout match from the admin template name
+                const name = template.name.toLowerCase();
+                if (name.includes('modern')) resumeData.templateType = 'modern';
+                else if (name.includes('minimalist')) resumeData.templateType = 'minimalist';
+                else if (name.includes('classic')) resumeData.templateType = 'classic';
+                else if (name.includes('creative')) resumeData.templateType = 'creative';
+                else if (name.includes('executive')) resumeData.templateType = 'executive';
+                // If no match found and we don't have a type yet, default to modern
+                else if (!resumeData.templateType) resumeData.templateType = 'modern';
+            }
+        }
+    } catch (err) { console.error("Template BG load failed", err); }
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
+    // Load Admin Templates into Dropdown
+    async function loadTemplateDropdown() {
+        const select = document.getElementById('template-select');
+        try {
+            const templates = await api.templates.getAll();
+            select.innerHTML = ''; // Clear "Loading..."
+            templates.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t._id;
+                opt.textContent = t.name;
+                // Pre-select current
+                if (resumeData.templateId === t._id) opt.selected = true;
+                select.appendChild(opt);
+            });
+        } catch (err) {
+            console.error("Failed to load templates for dropdown", err);
+            select.innerHTML = '<option value="">Error Loading Templates</option>';
+        }
+    }
+
     if (resumeId) {
         try {
             showLoader(true);
             const data = await api.resumes.getById(resumeId);
             resumeData = data;
+            if (resumeData.accentColor) updateAccentVars(resumeData.accentColor);
+            if (resumeData.templateId) await updateTemplateBackground(resumeData.templateId);
+            await loadTemplateDropdown();
             fillForm();
             renderPreview();
         } catch (err) {
@@ -51,89 +111,395 @@ document.addEventListener('DOMContentLoaded', async () => {
             showLoader(false);
         }
     } else {
-        renderPreview();
+        try {
+            showLoader(true);
+            const userData = JSON.parse(localStorage.getItem('user') || '{}');
+            if (userData.name) resumeData.personalDetails.name = userData.name;
+            if (userData.email) resumeData.personalDetails.email = userData.email;
+
+            if (urlTemplateId) {
+                resumeData.templateId = urlTemplateId;
+                await updateTemplateBackground(urlTemplateId);
+            }
+            await loadTemplateDropdown();
+            fillForm();
+            syncFormToData();
+            renderPreview();
+        } catch (err) {
+            console.error(err);
+        } finally {
+            showLoader(false);
+        }
     }
 
-    // Set up event listeners for inputs
     document.querySelectorAll('.live-input').forEach(input => {
         input.addEventListener('input', updateDataAndPreview);
     });
 
-    document.getElementById('template-select').addEventListener('change', (e) => {
-        resumeData.templateType = e.target.value;
+    document.getElementById('template-select').addEventListener('change', async (e) => {
+        const newTplId = e.target.value;
+        if (!newTplId) return;
+
+        showLoader(true);
+        resumeData.templateId = newTplId;
+
+        // Update background and type
+        await updateTemplateBackground(newTplId);
+
         renderPreview();
+        showLoader(false);
     });
 
     document.getElementById('save-btn').addEventListener('click', saveResume);
     document.getElementById('download-btn').addEventListener('click', downloadPDF);
 });
 
+// Inline Editing Sync (Canva-like)
+window.syncInlineEdit = (el) => {
+    const section = el.dataset.section;
+    const field = el.dataset.field;
+    const index = el.dataset.index;
+    const val = el.innerText;
+
+    if (section === 'personalDetails') {
+        resumeData.personalDetails[field] = val;
+        // Also sync the sidebar form if it exists
+        const input = document.querySelector(`input[name="${field}"]`);
+        if (input) input.value = val;
+    } else if (section === 'summary') {
+        resumeData.summary = val;
+        const textarea = document.querySelector('textarea[name="summary"]');
+        if (textarea) textarea.value = val;
+    } else if (section === 'skills' && index !== '') {
+        resumeData.skills[parseInt(index)] = val;
+        // Sync back to comma separated input
+        const skillsInput = document.querySelector('input[name="skills"]');
+        if (skillsInput) skillsInput.value = resumeData.skills.join(', ');
+    } else if (index !== '') {
+        const idx = parseInt(index);
+        if (resumeData[section] && resumeData[section][idx]) {
+            resumeData[section][idx][field] = val;
+
+            // Try to find the corresponding sidebar input
+            const container = document.getElementById(`${section}-list`);
+            if (container && container.children[idx]) {
+                const sidebarInput = container.children[idx].querySelector(`[oninput*="${field}"]`);
+                if (sidebarInput) sidebarInput.value = val;
+            }
+        }
+    }
+};
+
+function syncFormToData() {
+    const form = document.getElementById('resume-form');
+    if (!form) return;
+    for (const key in resumeData.personalDetails) {
+        const input = document.querySelector(`input[name="${key}"]`);
+        if (input) resumeData.personalDetails[key] = input.value;
+    }
+    const summaryTextarea = document.querySelector('textarea[name="summary"]');
+    if (summaryTextarea) resumeData.summary = summaryTextarea.value;
+    ['skills', 'certifications', 'languages'].forEach(f => {
+        const input = document.querySelector(`input[name="${f}"]`);
+        if (input) resumeData[f] = input.value.split(',').map(s => s.trim()).filter(s => s !== '');
+    });
+}
+
 function updateDataAndPreview(e) {
     const { name, value } = e.target;
-
     if (['name', 'jobTitle', 'email', 'phone', 'address', 'linkedin', 'github'].includes(name)) {
         resumeData.personalDetails[name] = value;
-    } else if (name === 'skills' || name === 'certifications' || name === 'languages') {
+    } else if (['skills', 'certifications', 'languages'].includes(name)) {
         resumeData[name] = value.split(',').map(s => s.trim()).filter(s => s !== '');
     } else {
         resumeData[name] = value;
     }
-
     renderPreview();
 }
 
 function fillForm() {
-    // Fill basic info
-    for (const key in resumeData.personalDetails) {
+    const { personalDetails, summary, skills, certifications, languages, templateType } = resumeData;
+    for (const key in personalDetails) {
         const input = document.querySelector(`input[name="${key}"]`);
-        if (input) input.value = resumeData.personalDetails[key];
+        if (input) input.value = personalDetails[key] || '';
     }
-
-    document.querySelector(`textarea[name="summary"]`).value = resumeData.summary || '';
-    document.querySelector(`input[name="skills"]`).value = (resumeData.skills || []).join(', ');
-    document.querySelector(`input[name="certifications"]`).value = (resumeData.certifications || []).join(', ');
-    document.querySelector(`input[name="languages"]`).value = (resumeData.languages || []).join(', ');
-    document.getElementById('template-select').value = resumeData.templateType || 'modern';
-
-    // Fill dynamic lists
-    const eduList = document.getElementById('education-list');
-    eduList.innerHTML = '';
-    (resumeData.education || []).forEach((edu, index) => addEducation(edu));
-
-    const expList = document.getElementById('experience-list');
-    expList.innerHTML = '';
-    (resumeData.experience || []).forEach((exp, index) => addExperience(exp));
-
-    const projList = document.getElementById('projects-list');
-    projList.innerHTML = '';
-    (resumeData.projects || []).forEach((proj, index) => addProject(proj));
+    if (document.querySelector('textarea[name="summary"]')) document.querySelector('textarea[name="summary"]').value = summary || '';
+    ['skills', 'certifications', 'languages'].forEach(f => {
+        const input = document.querySelector(`input[name="${f}"]`);
+        if (input) input.value = (resumeData[f] || []).join(', ');
+    });
+    if (document.getElementById('template-select')) document.getElementById('template-select').value = templateType || 'modern';
 }
 
-// Dynamic Sections Handlers
-function addEducation(data = { institution: '', degree: '', startDate: '', endDate: '', description: '' }) {
+function renderPreview() {
+    const preview = document.getElementById('resume-preview');
+    const { personalDetails, summary, education, experience, projects, skills, certifications, languages, templateType } = resumeData;
+
+    // Helper to make fields editable in-place
+    const edit = (section, field, value, index = '') => {
+        return `<span contenteditable="true" data-section="${section}" data-field="${field}" data-index="${index}" oninput="syncInlineEdit(this)" class="editable-field">${value || ''}</span>`;
+    };
+
+    const getSkillsHtml = () => skills.length > 0 ? `
+        <div style="margin-bottom: 1.5rem;">
+            <h3 style="color: var(--accent-color); text-transform: uppercase; font-size: 0.9rem; border-bottom: 1px solid var(--accent-border); margin-bottom: 0.5rem; font-weight: 700;">Skills</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
+                ${skills.map((s, i) => `<span style="background: var(--accent-light); color: var(--accent-color); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600;">${edit('skills', '', s, i)}</span>`).join('')}
+            </div>
+        </div>
+    ` : '';
+
+    // All templates now use transparent background to reveal the ADMIN TEMPLATE IMAGE underneath
+    const containerStyle = `background: transparent; color: #333; min-height: 297mm;`;
+
+    if (templateType === 'modern') {
+        preview.innerHTML = `
+            <div style="${containerStyle} padding: 1.5rem;">
+                <div style="border-bottom: 4px solid var(--accent-color); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                    <h1 style="font-size: 2.8rem; margin-bottom: 0.2rem; color: #1e293b;">${edit('personalDetails', 'name', personalDetails.name || 'Your Name')}</h1>
+                    <h3 style="color: var(--accent-color); font-weight: 600;">${edit('personalDetails', 'jobTitle', personalDetails.jobTitle || 'Job Title')}</h3>
+                    <div style="display: flex; gap: 1rem; margin-top: 0.8rem; flex-wrap: wrap; font-size: 0.85rem; color: #64748b;">
+                        <span><i class="fas fa-envelope" style="color:var(--accent-color)"></i> ${edit('personalDetails', 'email', personalDetails.email)}</span>
+                        <span><i class="fas fa-phone" style="color:var(--accent-color)"></i> ${edit('personalDetails', 'phone', personalDetails.phone)}</span>
+                        <span><i class="fas fa-map-marker-alt" style="color:var(--accent-color)"></i> ${edit('personalDetails', 'address', personalDetails.address)}</span>
+                    </div>
+                </div>
+                ${summary ? `<div style="margin-bottom: 1.5rem;"><h3 style="color:var(--accent-color); text-transform:uppercase; font-size:0.9rem; border-bottom:1px solid var(--accent-border); margin-bottom:0.5rem; font-weight:700;">Summary</h3><p style="font-size:0.92rem; line-height:1.6;">${edit('summary', 'summary', summary)}</p></div>` : ''}
+                ${experience.length > 0 ? `
+                    <div style="margin-bottom: 1.5rem;">
+                        <h3 style="color:var(--accent-color); text-transform:uppercase; font-size:0.9rem; border-bottom:1px solid var(--accent-border); margin-bottom:0.8rem; font-weight:700;">Experience</h3>
+                        ${experience.map((exp, i) => `
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; font-weight: 700;">
+                                    <span>${edit('experience', 'role', exp.role || 'Role', i)}</span>
+                                    <span style="color: var(--accent-color); font-size: 0.8rem;">${edit('experience', 'startDate', exp.startDate, i)} - ${edit('experience', 'endDate', exp.endDate, i)}</span>
+                                </div>
+                                <div style="font-style: italic; font-size: 0.85rem; margin-bottom: 0.3rem;">${edit('experience', 'company', exp.company || 'Company', i)}</div>
+                                <div style="font-size: 0.88rem; white-space: pre-line;">${edit('experience', 'description', exp.description || 'Job Description', i)}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    } else if (templateType === 'creative') {
+        preview.innerHTML = `
+            <div style="${containerStyle} display: grid; grid-template-columns: 260px 1fr; gap: 0;">
+                <aside style="background: var(--accent-light); padding: 2rem; border-right: 1px solid var(--accent-border);">
+                    <div style="width: 120px; height: 120px; background: #ddd; border-radius: 50%; margin: 0 auto 1.5rem; border: 4px solid #fff;"></div>
+                    <h1 style="font-size: 1.8rem; font-weight: 800; text-align: center; line-height: 1.1; margin-bottom: 0.5rem;">${edit('personalDetails', 'name', personalDetails.name)}</h1>
+                    <p style="text-align: center; color: var(--accent-color); font-weight: 600; font-size: 0.85rem; margin-bottom: 2rem;">${edit('personalDetails', 'jobTitle', personalDetails.jobTitle)}</p>
+                    
+                    <div style="margin-bottom: 2rem;">
+                        <h4 style="font-size: 0.75rem; color: var(--accent-color); letter-spacing: 1px; margin-bottom: 1rem; border-bottom: 1px solid var(--accent-border); padding-bottom: 0.3rem;">CONTACT</h4>
+                        <div style="font-size: 0.8rem; display: flex; flex-direction: column; gap: 0.6rem;">
+                            <div><i class="fas fa-envelope" style="width:20px"></i> ${edit('personalDetails', 'email', personalDetails.email)}</div>
+                            <div><i class="fas fa-phone" style="width:20px"></i> ${edit('personalDetails', 'phone', personalDetails.phone)}</div>
+                            <div><i class="fas fa-map-marker-alt" style="width:20px"></i> ${edit('personalDetails', 'address', personalDetails.address)}</div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h4 style="font-size: 0.75rem; color: var(--accent-color); letter-spacing: 1px; margin-bottom: 1rem; border-bottom: 1px solid var(--accent-border); padding-bottom: 0.3rem;">SKILLS</h4>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem;">
+                            ${skills.map((s, i) => `<div>• ${edit('skills', '', s, i)}</div>`).join('')}
+                        </div>
+                    </div>
+                </aside>
+                <main style="padding: 2.5rem;">
+                    <section style="margin-bottom: 2.5rem;">
+                        <h3 style="color: var(--accent-color); font-size: 1.1rem; border-bottom: 2px solid var(--accent-color); display: inline-block; padding-bottom: 0.2rem; margin-bottom: 1rem;">ABOUT ME</h3>
+                        <p style="font-size: 0.95rem; line-height: 1.7;">${edit('summary', 'summary', summary)}</p>
+                    </section>
+                    <section>
+                         <h3 style="color: var(--accent-color); font-size: 1.1rem; border-bottom: 2px solid var(--accent-color); display: inline-block; padding-bottom: 0.2rem; margin-bottom: 1rem;">EXPERIENCE</h3>
+                         ${experience.map((exp, i) => `
+                            <div style="margin-bottom: 1.5rem;">
+                                <div style="display: flex; justify-content: space-between; font-weight: 800;">
+                                    <span style="font-size: 1.05rem;">${edit('experience', 'role', exp.role, i)}</span>
+                                    <span style="font-size: 0.8rem; color: #64748b;">${exp.startDate} - ${exp.endDate}</span>
+                                </div>
+                                <div style="color: var(--accent-color); font-weight: 700; font-size: 0.9rem; margin: 0.2rem 0 0.5rem;">${edit('experience', 'company', exp.company, i)}</div>
+                                <p style="font-size: 0.92rem;">${edit('experience', 'description', exp.description, i)}</p>
+                            </div>
+                         `).join('')}
+                    </section>
+                </main>
+            </div>
+        `;
+    } else if (templateType === 'classic') {
+        preview.innerHTML = `
+            <div style="${containerStyle} padding: 3rem; font-family: 'Times New Roman', serif;">
+                <div style="text-align: center; border-bottom: 2px solid #333; padding-bottom: 1rem; margin-bottom: 2rem;">
+                    <h1 style="font-size: 2.5rem; text-transform: uppercase; margin-bottom: 0.5rem;">${edit('personalDetails', 'name', personalDetails.name || 'Your Name')}</h1>
+                    <div style="font-size: 0.95rem; font-style: italic;">
+                        ${edit('personalDetails', 'address', personalDetails.address)} • ${edit('personalDetails', 'phone', personalDetails.phone)} • ${edit('personalDetails', 'email', personalDetails.email)}
+                    </div>
+                </div>
+                
+                <section style="margin-bottom: 2rem;">
+                    <h3 style="font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 0.1rem; margin-bottom: 0.8rem; font-weight: bold;">PROFESSIONAL SUMMARY</h3>
+                    <p style="font-size: 1rem; line-height: 1.5; text-align: justify;">${edit('summary', 'summary', summary)}</p>
+                </section>
+
+                <section style="margin-bottom: 2rem;">
+                    <h3 style="font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 0.1rem; margin-bottom: 1rem; font-weight: bold;">EXPERIENCE</h3>
+                    ${experience.map((exp, i) => `
+                        <div style="margin-bottom: 1.2rem;">
+                            <div style="display: flex; justify-content: space-between; font-weight: bold;">
+                                <span>${edit('experience', 'company', exp.company, i)}</span>
+                                <span>${exp.startDate} - ${exp.endDate}</span>
+                            </div>
+                            <div style="font-style: italic; margin-bottom: 0.3rem;">${edit('experience', 'role', exp.role, i)}</div>
+                            <p style="font-size: 0.95rem;">${edit('experience', 'description', exp.description, i)}</p>
+                        </div>
+                    `).join('')}
+                </section>
+
+                <section>
+                    <h3 style="font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 0.1rem; margin-bottom: 1rem; font-weight: bold;">EDUCATION</h3>
+                    ${education.map((edu, i) => `
+                        <div style="margin-bottom: 0.8rem; display: flex; justify-content: space-between;">
+                            <div><strong>${edit('education', 'institution', edu.institution, i)}</strong>, ${edit('education', 'degree', edu.degree, i)}</div>
+                            <div style="font-style: italic;">${edu.endDate}</div>
+                        </div>
+                    `).join('')}
+                </section>
+            </div>
+        `;
+    } else if (templateType === 'minimalist') {
+        preview.innerHTML = `
+            <div style="${containerStyle} padding: 3rem; text-align: center;">
+                <div style="margin-bottom: 3rem;">
+                    <h1 style="font-size: 3rem; margin-bottom: 0.5rem; letter-spacing: -1.5px; color: #0f172a;">${edit('personalDetails', 'name', personalDetails.name || 'Your Name')}</h1>
+                    <h3 style="color: var(--accent-color); font-weight: 500; text-transform: uppercase; letter-spacing: 4px; font-size: 0.9rem;">${edit('personalDetails', 'jobTitle', personalDetails.jobTitle)}</h3>
+                    <div style="margin-top: 1rem; font-size: 0.85rem; color: #64748b; display: flex; justify-content: center; gap: 1.5rem;">
+                        <span>${edit('personalDetails', 'email', personalDetails.email)}</span>
+                        <span style="color: #e2e8f0;">|</span>
+                        <span>${edit('personalDetails', 'phone', personalDetails.phone)}</span>
+                    </div>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 4rem; text-align: left; border-top: 1px solid #f1f5f9; padding-top: 3rem;">
+                    <aside>
+                        <h4 style="color: var(--accent-color); font-size: 0.75rem; font-weight: 900; letter-spacing: 2px; margin-bottom: 1.5rem;">SKILLS</h4>
+                        <div style="display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.9rem;">
+                            ${skills.map((s, i) => `<div>• ${edit('skills', '', s, i)}</div>`).join('')}
+                        </div>
+                    </aside>
+                    <main>
+                        <h4 style="color: var(--accent-color); font-size: 0.75rem; font-weight: 900; letter-spacing: 2px; margin-bottom: 1.5rem;">EXPERIENCE</h4>
+                        ${experience.map((exp, i) => `
+                            <div style="margin-bottom: 2.5rem;">
+                                <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 0.4rem;">
+                                    <span style="font-size: 1.1rem;">${edit('experience', 'role', exp.role, i)}</span>
+                                    <span style="font-weight: 500; font-size: 0.8rem; color: #94a3b8;">${exp.startDate} - ${exp.endDate}</span>
+                                </div>
+                                <div style="font-style: italic; font-size: 0.9rem; color: var(--accent-color); margin-bottom: 0.8rem;">${edit('experience', 'company', exp.company, i)}</div>
+                                <p style="font-size: 0.95rem; color: #475569; line-height: 1.7;">${edit('experience', 'description', exp.description, i)}</p>
+                            </div>
+                        `).join('')}
+                    </main>
+                </div>
+            </div>
+        `;
+    } else if (templateType === 'executive') {
+        preview.innerHTML = `
+            <div style="${containerStyle} border: 1px solid #e2e8f0; position: relative;">
+                <div style="background: var(--accent-color); height: 12px; width: 100%;"></div>
+                <div style="padding: 4rem;">
+                    <header style="margin-bottom: 4rem; text-align: center;">
+                        <h1 style="font-size: 3.5rem; font-weight: 900; color: #0f172a; margin-bottom: 0.5rem; text-transform: uppercase;">${edit('personalDetails', 'name', personalDetails.name || 'Your Name')}</h1>
+                        <h2 style="font-size: 1.2rem; color: var(--accent-color); font-weight: 700; text-transform: uppercase; letter-spacing: 6px; margin-bottom: 2rem;">${edit('personalDetails', 'jobTitle', personalDetails.jobTitle || 'Executive Profile')}</h2>
+                        <div style="display: flex; justify-content: center; gap: 2rem; font-size: 0.85rem; color: #64748b; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; padding: 1rem 0;">
+                            <span>${edit('personalDetails', 'email', personalDetails.email)}</span>
+                            <span>${edit('personalDetails', 'phone', personalDetails.phone)}</span>
+                        </div>
+                    </header>
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 4rem; text-align: left;">
+                        <section>
+                            <h3 style="font-size: 1.1rem; font-weight: 800; border-bottom: 2px solid #0f172a; padding-bottom: 0.5rem; margin-bottom: 1.5rem;">PROFESSIONAL EXPERIENCE</h3>
+                            ${experience.map((exp, i) => `
+                                <div style="margin-bottom: 2.5rem;">
+                                    <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem;">
+                                        <h4 style="font-size: 1.2rem; font-weight: 800;">${edit('experience', 'role', exp.role, i)}</h4>
+                                        <span style="font-size: 0.85rem; color: #64748b;">${exp.startDate} — ${exp.endDate}</span>
+                                    </div>
+                                    <div style="font-weight: 700; color: var(--accent-color); margin-bottom: 1rem;">${edit('experience', 'company', exp.company, i)}</div>
+                                    <div style="font-size: 0.95rem; color: #334155; line-height: 1.7;">${edit('experience', 'description', exp.description, i)}</div>
+                                </div>
+                            `).join('')}
+                        </section>
+                        <aside>
+                            <h3 style="font-size: 1.1rem; font-weight: 800; border-bottom: 2px solid #0f172a; padding-bottom: 0.5rem; margin-bottom: 1.5rem;">EXPERT SKILLS</h3>
+                            <div style="display: flex; flex-direction: column; gap: 0.8rem; font-size: 0.95rem;">
+                                ${skills.map((s, i) => `<div>• ${edit('skills', '', s, i)}</div>`).join('')}
+                            </div>
+                        </aside>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else {
+        // Fallback for ANY OTHER admin template: use a centered high-quality transparent layout
+        preview.innerHTML = `
+            <div style="${containerStyle} padding: 4rem; text-align: center;">
+                 <h1 style="font-size: 4rem; font-weight: 900; margin-bottom: 0.5rem; color: #1e293b;">${edit('personalDetails', 'name', personalDetails.name || 'Your Name')}</h1>
+                 <h2 style="font-size: 1.5rem; color: var(--accent-color); font-weight: 600; margin-bottom: 3rem; text-transform: uppercase; letter-spacing: 2px;">${edit('personalDetails', 'jobTitle', personalDetails.jobTitle || 'Your Profession')}</h2>
+                 
+                 <div style="max-width: 800px; margin: 0 auto; text-align: left;">
+                    <section style="margin-bottom: 4rem;">
+                        <h3 style="font-size: 1.2rem; border-bottom: 2px solid var(--accent-color); display: inline-block; padding-bottom: 0.3rem; margin-bottom: 1.5rem;">SUMMARY</h3>
+                        <p style="font-size: 1.1rem; line-height: 1.8; color: #475569;">${edit('summary', 'summary', summary || 'Click here to start writing your professional summary...')}</p>
+                    </section>
+
+                    <section>
+                         <h3 style="font-size: 1.2rem; border-bottom: 2px solid var(--accent-color); display: inline-block; padding-bottom: 0.3rem; margin-bottom: 2rem;">KEY EXPERIENCE</h3>
+                         ${experience.length > 0 ? experience.map((exp, i) => `
+                            <div style="margin-bottom: 2.5rem;">
+                                <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                                    <h4 style="font-size: 1.3rem; font-weight: 800;">${edit('experience', 'role', exp.role, i)}</h4>
+                                    <span style="color: #94a3b8;">${exp.startDate} - ${exp.endDate}</span>
+                                </div>
+                                <div style="color: var(--accent-color); font-weight: 700; margin-bottom: 0.8rem;">${edit('experience', 'company', exp.company, i)}</div>
+                                <p style="font-size: 1rem; line-height: 1.7;">${edit('experience', 'description', exp.description, i)}</p>
+                            </div>
+                         `).join('') : '<p style="color:#94a3b8; font-style:italic;">Add your experience in the sidebar to see it appear here...</p>'}
+                    </section>
+                 </div>
+            </div>
+        `;
+    }
+}
+
+// REST OF CRUD
+async function saveResume() {
+    showLoader(true);
+    try {
+        if (resumeId) { await api.resumes.update(resumeId, resumeData); showToast('Changes saved successfully'); }
+        else { const d = await api.resumes.create(resumeData); window.location.href = `/builder?id=${d._id}`; }
+    } catch (err) { showToast(err.message, 'error'); } finally { showLoader(false); }
+}
+
+async function downloadPDF() {
+    const el = document.getElementById('resume-preview');
+    showLoader(true);
+    try {
+        const canvas = await html2canvas(el, { scale: 2, useCORS: true });
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+        const w = pdf.internal.pageSize.getWidth();
+        const h = (canvas.height * w) / canvas.width;
+        pdf.addImage(imgData, 'PNG', 0, 0, w, h);
+        pdf.save(`${resumeData.personalDetails.name || 'resume'}.pdf`);
+    } catch (err) { console.error(err); showToast('PDF generation failed', 'error'); } finally { showLoader(false); }
+}
+
+function addEducation(data = { institution: '', degree: '', startDate: '', endDate: '' }) {
     const container = document.getElementById('education-list');
     const index = container.children.length;
     const div = document.createElement('div');
     div.className = 'dynamic-item';
-    div.innerHTML = `
-        <span class="remove-btn" onclick="removeItem(this, 'education')">&times;</span>
-        <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div class="form-group">
-                <input type="text" placeholder="Institution" value="${data.institution}" oninput="updateListItem(this, 'education', ${index}, 'institution')">
-            </div>
-            <div class="form-group">
-                <input type="text" placeholder="Degree" value="${data.degree}" oninput="updateListItem(this, 'education', ${index}, 'degree')">
-            </div>
-        </div>
-        <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div class="form-group">
-                <input type="text" placeholder="Start Date" value="${data.startDate}" oninput="updateListItem(this, 'education', ${index}, 'startDate')">
-            </div>
-            <div class="form-group">
-                <input type="text" placeholder="End Date" value="${data.endDate}" oninput="updateListItem(this, 'education', ${index}, 'endDate')">
-            </div>
-        </div>
-    `;
+    div.innerHTML = `<div class="grid-2"><input type="text" placeholder="Institution" value="${data.institution}" oninput="updateListItem(this, 'education', ${index}, 'institution')"><input type="text" placeholder="Degree" value="${data.degree}" oninput="updateListItem(this, 'education', ${index}, 'degree')"></div>`;
     container.appendChild(div);
     if (!resumeData.education[index]) resumeData.education.push(data);
     renderPreview();
@@ -144,457 +510,14 @@ function addExperience(data = { company: '', role: '', startDate: '', endDate: '
     const index = container.children.length;
     const div = document.createElement('div');
     div.className = 'dynamic-item';
-    div.innerHTML = `
-        <span class="remove-btn" onclick="removeItem(this, 'experience')">&times;</span>
-        <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div class="form-group">
-                <input type="text" placeholder="Company" value="${data.company}" oninput="updateListItem(this, 'experience', ${index}, 'company')">
-            </div>
-            <div class="form-group">
-                <input type="text" placeholder="Role" value="${data.role}" oninput="updateListItem(this, 'experience', ${index}, 'role')">
-            </div>
-        </div>
-        <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div class="form-group">
-                <input type="text" placeholder="Start Date" value="${data.startDate}" oninput="updateListItem(this, 'experience', ${index}, 'startDate')">
-            </div>
-            <div class="form-group">
-                <input type="text" placeholder="End Date" value="${data.endDate}" oninput="updateListItem(this, 'experience', ${index}, 'endDate')">
-            </div>
-        </div>
-        <div class="form-group">
-            <textarea placeholder="Description" oninput="updateListItem(this, 'experience', ${index}, 'description')">${data.description}</textarea>
-        </div>
-    `;
+    div.innerHTML = `<input type="text" placeholder="Role" value="${data.role}" oninput="updateListItem(this, 'experience', ${index}, 'role')"><textarea placeholder="Desc" oninput="updateListItem(this, 'experience', ${index}, 'description')">${data.description}</textarea>`;
     container.appendChild(div);
     if (!resumeData.experience[index]) resumeData.experience.push(data);
     renderPreview();
 }
 
-function addProject(data = { title: '', link: '', description: '' }) {
-    const container = document.getElementById('projects-list');
-    const index = container.children.length;
-    const div = document.createElement('div');
-    div.className = 'dynamic-item';
-    div.innerHTML = `
-        <span class="remove-btn" onclick="removeItem(this, 'projects')">&times;</span>
-        <div class="grid-2" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div class="form-group">
-                <input type="text" placeholder="Project Title" value="${data.title}" oninput="updateListItem(this, 'projects', ${index}, 'title')">
-            </div>
-            <div class="form-group">
-                <input type="text" placeholder="Link" value="${data.link}" oninput="updateListItem(this, 'projects', ${index}, 'link')">
-            </div>
-        </div>
-        <div class="form-group">
-            <textarea placeholder="Description" oninput="updateListItem(this, 'projects', ${index}, 'description')">${data.description}</textarea>
-        </div>
-    `;
-    container.appendChild(div);
-    if (!resumeData.projects[index]) resumeData.projects.push(data);
+function updateListItem(el, sec, idx, fld) {
+    if (!resumeData[sec][idx]) resumeData[sec][idx] = {};
+    resumeData[sec][idx][fld] = el.value;
     renderPreview();
-}
-
-function updateListItem(el, section, index, field) {
-    resumeData[section][index][field] = el.value;
-    renderPreview();
-}
-
-function removeItem(el, section) {
-    const item = el.parentElement;
-    const container = item.parentElement;
-    const index = Array.from(container.children).indexOf(item);
-    resumeData[section].splice(index, 1);
-    item.remove();
-
-    // Refresh indices of remaining items
-    Array.from(container.children).forEach((child, i) => {
-        child.querySelectorAll('input, textarea').forEach(input => {
-            const currentOnInput = input.getAttribute('oninput');
-            const newOnInput = currentOnInput.replace(/,\s*\d+\s*,/, `, ${i},`);
-            input.setAttribute('oninput', newOnInput);
-        });
-    });
-
-    renderPreview();
-}
-
-// Preview Rendering
-function renderPreview() {
-    const preview = document.getElementById('resume-preview');
-    const { personalDetails, summary, education, experience, projects, skills, certifications, languages, templateType } = resumeData;
-
-    // Helper functions for shared sections
-    const getSkillsHtml = (style = "") => skills.length > 0 ? `
-        <div style="margin-bottom: 1.5rem; ${style}">
-            <h3 style="color: inherit; text-transform: uppercase; font-size: 1rem; border-bottom: 1px solid rgba(0,0,0,0.1); margin-bottom: 0.5rem; padding-bottom: 0.2rem;">Skills</h3>
-            <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.5rem;">
-                ${skills.map(skill => `<span style="background: rgba(0,0,0,0.05); padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.85rem;">${skill}</span>`).join('')}
-            </div>
-        </div>
-    ` : '';
-
-    const getLanguagesHtml = () => languages.length > 0 ? `
-        <div style="margin-bottom: 1.5rem;">
-            <h3 style="color: inherit; text-transform: uppercase; font-size: 1rem; border-bottom: 1px solid rgba(0,0,0,0.1); margin-bottom: 0.5rem; padding-bottom: 0.2rem;">Languages</h3>
-            <p style="font-size: 0.9rem;">${languages.join(', ')}</p>
-        </div>
-    ` : '';
-
-    if (templateType === 'modern') {
-        preview.innerHTML = `
-            <div style="border-bottom: 2px solid var(--primary-color); padding-bottom: 1rem; margin-bottom: 1.5rem;">
-                <h1 style="font-size: 2.5rem; color: var(--text-dark); margin-bottom: 0.2rem;">${personalDetails.name || 'Your Name'}</h1>
-                <h3 style="color: var(--primary-color); font-weight: 500;">${personalDetails.jobTitle || 'Job Title'}</h3>
-                <div style="display: flex; gap: 1rem; margin-top: 0.5rem; flex-wrap: wrap; color: var(--text-muted); font-size: 0.9rem;">
-                    ${personalDetails.email ? `<span><i class="fas fa-envelope"></i> ${personalDetails.email}</span>` : ''}
-                    ${personalDetails.phone ? `<span><i class="fas fa-phone"></i> ${personalDetails.phone}</span>` : ''}
-                    ${personalDetails.address ? `<span><i class="fas fa-map-marker-alt"></i> ${personalDetails.address}</span>` : ''}
-                    ${personalDetails.linkedin ? `<span><i class="fab fa-linkedin"></i> ${personalDetails.linkedin}</span>` : ''}
-                    ${personalDetails.github ? `<span><i class="fab fa-github"></i> ${personalDetails.github}</span>` : ''}
-                </div>
-            </div>
-
-            ${summary ? `
-                <div style="margin-bottom: 1.5rem;">
-                    <h3 style="color: var(--primary-color); text-transform: uppercase; font-size: 1rem; border-bottom: 1px solid var(--border-color); margin-bottom: 0.5rem; padding-bottom: 0.2rem;">Summary</h3>
-                    <p style="font-size: 0.95rem;">${summary}</p>
-                </div>
-            ` : ''}
-
-            ${experience.length > 0 ? `
-                <div style="margin-bottom: 1.5rem;">
-                    <h3 style="color: var(--primary-color); text-transform: uppercase; font-size: 1rem; border-bottom: 1px solid var(--border-color); margin-bottom: 0.8rem; padding-bottom: 0.2rem;">Experience</h3>
-                    ${experience.map(exp => `
-                        <div style="margin-bottom: 1rem;">
-                            <div style="display: flex; justify-content: space-between; font-weight: 700;">
-                                <span>${exp.role || 'Role'}</span>
-                                <span style="font-weight: 400; color: var(--text-muted);">${exp.startDate} - ${exp.endDate}</span>
-                            </div>
-                            <div style="font-style: italic; color: var(--text-muted); margin-bottom: 0.3rem;">${exp.company || 'Company'}</div>
-                            <p style="white-space: pre-line; font-size: 0.9rem;">${exp.description}</p>
-                        </div>
-                    `).join('')}
-                </div>
-            ` : ''}
-
-            ${education.length > 0 ? `
-                <div style="margin-bottom: 1.5rem;">
-                    <h3 style="color: var(--primary-color); text-transform: uppercase; font-size: 1rem; border-bottom: 1px solid var(--border-color); margin-bottom: 0.8rem; padding-bottom: 0.2rem;">Education</h3>
-                    ${education.map(edu => `
-                        <div style="margin-bottom: 0.8rem;">
-                            <div style="display: flex; justify-content: space-between; font-weight: 700;">
-                                <span>${edu.degree || 'Degree'}</span>
-                                <span style="font-weight: 400; color: var(--text-muted);">${edu.startDate} - ${edu.endDate}</span>
-                            </div>
-                            <div style="color: var(--text-muted);">${edu.institution || 'Institution'}</div>
-                        </div>
-                    `).join('')}
-                </div>
-            ` : ''}
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
-                <div>
-                    ${getSkillsHtml("color: var(--primary-color);")}
-                </div>
-                <div>
-                     ${getLanguagesHtml()}
-                </div>
-            </div>
-        `;
-    } else if (templateType === 'minimalist') {
-        preview.innerHTML = `
-            <div style="text-align: center; margin-bottom: 2rem;">
-                <h1 style="font-size: 3rem; margin-bottom: 0.5rem;">${personalDetails.name || 'Your Name'}</h1>
-                <div style="display: flex; justify-content: center; gap: 1rem; font-size: 0.9rem; color: var(--text-muted);">
-                    ${personalDetails.email} | ${personalDetails.phone} | ${personalDetails.address}
-                </div>
-            </div>
-
-            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem;">
-                <div style="border-right: 1px solid var(--border-color); padding-right: 1.5rem;">
-                    <section style="margin-bottom: 2rem;">
-                        <h4 style="border-bottom: 1px solid var(--text-dark); padding-bottom: 0.2rem; margin-bottom: 1rem;">SKILLS</h4>
-                        <ul style="list-style: none; font-size: 0.9rem;">
-                            ${skills.map(s => `<li style="margin-bottom: 0.3rem;">${s}</li>`).join('')}
-                        </ul>
-                    </section>
-
-                    <section style="margin-bottom: 2rem;">
-                        <h4 style="border-bottom: 1px solid var(--text-dark); padding-bottom: 0.2rem; margin-bottom: 1rem;">EDUCATION</h4>
-                         ${education.map(edu => `
-                            <div style="margin-bottom: 1rem; font-size: 0.85rem;">
-                                <div style="font-weight: 700;">${edu.degree}</div>
-                                <div>${edu.institution}</div>
-                                <div style="color: var(--text-muted);">${edu.startDate} - ${edu.endDate}</div>
-                            </div>
-                        `).join('')}
-                    </section>
-                </div>
-
-                <div>
-                    <section style="margin-bottom: 2rem;">
-                        <h4 style="border-bottom: 1px solid var(--text-dark); padding-bottom: 0.2rem; margin-bottom: 1rem;">EXPERIENCE</h4>
-                        ${experience.map(exp => `
-                            <div style="margin-bottom: 1.5rem;">
-                                <div style="display: flex; justify-content: space-between;">
-                                    <span style="font-weight: 700;">${exp.role}</span>
-                                    <span>${exp.startDate} - ${exp.endDate}</span>
-                                </div>
-                                <div style="font-style: italic;">${exp.company}</div>
-                                <p style="font-size: 0.9rem; margin-top: 0.5rem;">${exp.description}</p>
-                            </div>
-                        `).join('')}
-                    </section>
-
-                    <section>
-                        <h4 style="border-bottom: 1px solid var(--text-dark); padding-bottom: 0.2rem; margin-bottom: 1rem;">PROJECTS</h4>
-                         ${projects.map(p => `
-                            <div style="margin-bottom: 1rem;">
-                                <div style="font-weight: 700;">${p.title}</div>
-                                <p style="font-size: 0.9rem;">${p.description}</p>
-                            </div>
-                        `).join('')}
-                    </section>
-                </div>
-            </div>
-        `;
-    } else if (templateType === 'classic') {
-        preview.innerHTML = `
-            <div style="text-align: center; border-bottom: 1px solid #000; padding-bottom: 1rem; margin-bottom: 1rem;">
-                <h1 style="font-size: 2rem; text-transform: uppercase;">${personalDetails.name || 'Your Name'}</h1>
-                <p style="font-size: 1rem; margin-top: 5px;">
-                    ${personalDetails.address || ''} | ${personalDetails.phone || ''} | ${personalDetails.email || ''}
-                </p>
-            </div>
-
-            ${summary ? `
-                <div style="margin-bottom: 1rem;">
-                    <h3 style="font-size: 1.1rem; border-bottom: 1px solid #000; margin-bottom: 0.5rem;">PROFESSIONAL SUMMARY</h3>
-                    <p style="font-size: 0.95rem;">${summary}</p>
-                </div>
-            ` : ''}
-
-            ${experience.length > 0 ? `
-                <div style="margin-bottom: 1rem;">
-                    <h3 style="font-size: 1.1rem; border-bottom: 1px solid #000; margin-bottom: 0.5rem;">EXPERIENCE</h3>
-                    ${experience.map(exp => `
-                        <div style="margin-bottom: 0.8rem;">
-                            <div style="display: flex; justify-content: space-between;">
-                                <strong>${exp.company}</strong>
-                                <span>${exp.startDate} - ${exp.endDate}</span>
-                            </div>
-                            <div style="font-style: italic;">${exp.role}</div>
-                            <p style="font-size: 0.9rem; margin-top: 0.3rem;">${exp.description}</p>
-                        </div>
-                    `).join('')}
-                </div>
-            ` : ''}
-
-            ${education.length > 0 ? `
-                <div style="margin-bottom: 1rem;">
-                    <h3 style="font-size: 1.1rem; border-bottom: 1px solid #000; margin-bottom: 0.5rem;">EDUCATION</h3>
-                    ${education.map(edu => `
-                        <div style="margin-bottom: 0.5rem;">
-                            <div style="display: flex; justify-content: space-between;">
-                                <strong>${edu.institution}</strong>
-                                <span>${edu.startDate} - ${edu.endDate}</span>
-                            </div>
-                            <div>${edu.degree}</div>
-                        </div>
-                    `).join('')}
-                </div>
-            ` : ''}
-
-            ${getSkillsHtml()}
-        `;
-    } else if (templateType === 'creative') {
-        preview.innerHTML = `
-            <div style="display: grid; grid-template-columns: 1fr 2.5fr; min-height: 297mm; margin: -20mm; overflow: hidden;">
-                <!-- Sidebar -->
-                <div style="background: #2D3E50; color: white; padding: 2rem; display: flex; flex-direction: column; gap: 2rem;">
-                    <div style="text-align: center;">
-                        <h1 style="font-size: 1.8rem; line-height: 1.2; margin-bottom: 1rem;">${personalDetails.name || 'NAME'}</h1>
-                        <p style="font-size: 1rem; opacity: 0.8; font-weight: 300;">${personalDetails.jobTitle || ''}</p>
-                    </div>
-                    
-                    <div>
-                        <h4 style="border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 0.5rem; margin-bottom: 1rem;">CONTACT</h4>
-                        <div style="font-size: 0.85rem; display: flex; flex-direction: column; gap: 0.5rem;">
-                             ${personalDetails.email ? `<div><i class="fas fa-envelope"></i> ${personalDetails.email}</div>` : ''}
-                             ${personalDetails.phone ? `<div><i class="fas fa-phone"></i> ${personalDetails.phone}</div>` : ''}
-                             ${personalDetails.linkedin ? `<div><i class="fab fa-linkedin"></i> ${personalDetails.linkedin}</div>` : ''}
-                        </div>
-                    </div>
-
-                    <div>
-                        <h4 style="border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 0.5rem; margin-bottom: 1rem;">SKILLS</h4>
-                        <div style="display: flex; flex-wrap: wrap; gap: 0.4rem;">
-                            ${skills.map(s => `<span style="border: 1px solid rgba(255,255,255,0.3); padding: 0.2rem 0.5rem; border-radius: 20px; font-size: 0.75rem;">${s}</span>`).join('')}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Main Content -->
-                <div style="padding: 3rem; background: white;">
-                    ${summary ? `
-                        <div style="margin-bottom: 2.5rem;">
-                            <h2 style="color: #2D3E50; font-size: 1.5rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem;">
-                                <span style="display: block; width: 40px; height: 1px; background: #2D3E50;"></span> SUMMARY
-                            </h2>
-                            <p style="color: #666; line-height: 1.6;">${summary}</p>
-                        </div>
-                    ` : ''}
-
-                    ${experience.length > 0 ? `
-                        <div style="margin-bottom: 2.5rem;">
-                            <h2 style="color: #2D3E50; font-size: 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
-                                <span style="display: block; width: 40px; height: 1px; background: #2D3E50;"></span> EXPERIENCE
-                            </h2>
-                            ${experience.map(exp => `
-                                <div style="margin-bottom: 1.5rem; position: relative; padding-left: 1.5rem; border-left: 2px solid #EEE;">
-                                    <div style="width: 12px; height: 12px; background: #2D3E50; border-radius: 50%; position: absolute; left: -7px; top: 5px;"></div>
-                                    <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
-                                        <h4 style="margin: 0; color: #333;">${exp.role}</h4>
-                                        <span style="font-size: 0.8rem; color: #999;">${exp.startDate} - ${exp.endDate}</span>
-                                    </div>
-                                    <div style="color: #2D3E50; font-weight: 600; font-size: 0.9rem; margin-bottom: 0.5rem;">${exp.company}</div>
-                                    <p style="color: #666; font-size: 0.85rem; margin: 0;">${exp.description}</p>
-                                </div>
-                            `).join('')}
-                        </div>
-                    ` : ''}
-
-                    ${education.length > 0 ? `
-                        <div>
-                            <h2 style="color: #2D3E50; font-size: 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem;">
-                                <span style="display: block; width: 40px; height: 1px; background: #2D3E50;"></span> EDUCATION
-                            </h2>
-                            ${education.map(edu => `
-                                <div style="margin-bottom: 1rem;">
-                                    <h4 style="margin: 0; color: #333;">${edu.degree}</h4>
-                                    <div style="color: #666; font-size: 0.9rem;">${edu.institution} | ${edu.startDate} - ${edu.endDate}</div>
-                                </div>
-                            `).join('')}
-                        </div>
-                    ` : ''}
-                </div>
-            </div>
-        `;
-    } else if (templateType === 'executive') {
-        preview.innerHTML = `
-            <div style="border: 1px solid #EEE; padding: 2rem;">
-                <div style="text-align: left; border-bottom: 4px solid #1A237E; padding-bottom: 1.5rem; margin-bottom: 2rem;">
-                    <h1 style="font-size: 2.8rem; color: #1A237E; margin: 0; letter-spacing: -1px;">${personalDetails.name || 'NAME'}</h1>
-                    <h2 style="font-size: 1.3rem; color: #555; margin-top: 0.5rem; font-weight: 300; letter-spacing: 2px; text-transform: uppercase;">${personalDetails.jobTitle || 'EXECUTIVE LEADER'}</h2>
-                    <div style="display: flex; gap: 1.5rem; margin-top: 1rem; font-size: 0.85rem; color: #777;">
-                        <span>${personalDetails.email}</span>
-                        <span>${personalDetails.phone}</span>
-                        <span>${personalDetails.address}</span>
-                    </div>
-                </div>
-
-                ${summary ? `
-                    <div style="margin-bottom: 2rem;">
-                        <h3 style="background: #1A237E; color: white; padding: 0.3rem 1rem; font-size: 1rem; display: inline-block; margin-bottom: 1rem;">PROFILE</h3>
-                        <p style="line-height: 1.6; color: #444;">${summary}</p>
-                    </div>
-                ` : ''}
-
-                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2.5rem;">
-                    <div>
-                        ${experience.length > 0 ? `
-                            <div style="margin-bottom: 2rem;">
-                                <h3 style="border-bottom: 2px solid #1A237E; color: #1A237E; font-size: 1.1rem; padding-bottom: 0.3rem; margin-bottom: 1rem;">CAREER HISTORY</h3>
-                                ${experience.map(exp => `
-                                    <div style="margin-bottom: 1.5rem;">
-                                        <div style="display: flex; justify-content: space-between; align-items: baseline;">
-                                            <h4 style="margin: 0; font-size: 1.1rem; color: #222;">${exp.role}</h4>
-                                            <span style="font-size: 0.8rem; font-weight: 700;">${exp.startDate} - ${exp.endDate}</span>
-                                        </div>
-                                        <div style="color: #1A237E; font-weight: 700; font-size: 0.95rem; margin-bottom: 0.5rem;">${exp.company}</div>
-                                        <p style="color: #555; font-size: 0.9rem; line-height: 1.5;">${exp.description}</p>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        ` : ''}
-                    </div>
-                    <div>
-                        ${skills.length > 0 ? `
-                            <div style="margin-bottom: 2rem;">
-                                <h3 style="border-bottom: 2px solid #1A237E; color: #1A237E; font-size: 1.1rem; padding-bottom: 0.3rem; margin-bottom: 1rem;">CORE COMPETENCIES</h3>
-                                <ul style="padding-left: 1.2rem; font-size: 0.9rem; color: #444;">
-                                    ${skills.map(s => `<li style="margin-bottom: 0.5rem;">${s}</li>`).join('')}
-                                </ul>
-                            </div>
-                        ` : ''}
-
-                        ${education.length > 0 ? `
-                            <div>
-                                <h3 style="border-bottom: 2px solid #1A237E; color: #1A237E; font-size: 1.1rem; padding-bottom: 0.3rem; margin-bottom: 1rem;">ACADEMIC BACKGROUND</h3>
-                                ${education.map(edu => `
-                                    <div style="margin-bottom: 1rem; font-size: 0.85rem;">
-                                        <div style="font-weight: 800;">${edu.degree}</div>
-                                        <div style="color: #666;">${edu.institution}</div>
-                                        <div style="color: #999;">${edu.startDate} - ${edu.endDate}</div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        ` : ''}
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-}
-
-// API Actions
-async function saveResume() {
-    showLoader(true);
-    try {
-        if (resumeId) {
-            await api.resumes.update(resumeId, resumeData);
-            showToast('Resume updated successfully');
-        } else {
-            const data = await api.resumes.create(resumeData);
-            showToast('Resume saved successfully');
-            window.location.href = `/builder?id=${data._id}`;
-        }
-    } catch (err) {
-        showToast(err.message, 'error');
-    } finally {
-        showLoader(false);
-    }
-}
-
-async function downloadPDF() {
-    const element = document.getElementById('resume-preview');
-    const { personalDetails } = resumeData;
-    const filename = `${(personalDetails.name || 'resume').replace(/\s+/g, '_')}_resume.pdf`;
-
-    showLoader(true);
-    try {
-        const canvas = await html2canvas(element, {
-            scale: 2,
-            useCORS: true,
-            logging: false
-        });
-
-        const imgData = canvas.toDataURL('image/png');
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p', 'mm', 'a4');
-
-        const imgProps = pdf.getImageProperties(imgData);
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-        pdf.save(filename);
-        showToast('PDF downloaded successfully');
-    } catch (err) {
-        console.error(err);
-        showToast('Error generating PDF', 'error');
-    } finally {
-        showLoader(false);
-    }
 }

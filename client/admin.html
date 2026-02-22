@@ -715,14 +715,25 @@
                 <div class="upload-form">
                     <h3><i class="fas fa-cloud-upload-alt" style="color:#2563EB;margin-right:0.5rem;"></i> Upload New
                         Template</h3>
-                    <div class="form-row">
+                    <div class="form-row" style="grid-template-columns: 1fr 1fr 1fr;">
                         <div class="form-field">
                             <label for="tpl-name">Template Name *</label>
-                            <input type="text" id="tpl-name" placeholder="e.g. Executive Dark, Minimal Blue..." />
+                            <input type="text" id="tpl-name" placeholder="e.g. Executive Dark..." />
+                        </div>
+                        <div class="form-field">
+                            <label for="tpl-type">Layout Type</label>
+                            <select id="tpl-type"
+                                style="width: 100%; padding: 0.6rem 0.9rem; border: 1px solid #E2E8F0; border-radius: 8px; font-size: 0.88rem; background: white;">
+                                <option value="modern">Modern</option>
+                                <option value="creative">Creative</option>
+                                <option value="classic">Classic</option>
+                                <option value="minimalist">Minimalist</option>
+                                <option value="executive">Executive</option>
+                            </select>
                         </div>
                         <div class="form-field">
                             <label for="tpl-desc">Description</label>
-                            <input type="text" id="tpl-desc" placeholder="Short description of this template..." />
+                            <input type="text" id="tpl-desc" placeholder="Short description..." />
                         </div>
                     </div>
                     <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
@@ -882,17 +893,22 @@
 
         async function uploadTemplate() {
             const name = document.getElementById('tpl-name').value.trim();
+            const type = document.getElementById('tpl-type').value;
             const desc = document.getElementById('tpl-desc').value.trim();
             if (!name || !selectedFile) return;
+
             const token = localStorage.getItem('token');
             const btn = document.getElementById('upload-btn');
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+
             try {
                 const formData = new FormData();
                 formData.append('name', name);
+                formData.append('type', type);
                 formData.append('description', desc);
                 formData.append('templateFile', selectedFile);
+
                 const res = await fetch(`${BASE}/api/admin/templates`, {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${token}` },
@@ -900,6 +916,7 @@
                 });
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.msg);
+
                 showToast('Template uploaded successfully!');
                 document.getElementById('tpl-name').value = '';
                 document.getElementById('tpl-desc').value = '';
@@ -935,7 +952,10 @@
                             ${!t.isActive ? `<div class="tpl-inactive-overlay"><span class="inactive-label">Hidden</span></div>` : ''}
                         </div>
                         <div class="tpl-body">
-                            <div class="tpl-name">${t.name}</div>
+                            <div style="display:flex; justify-content:space-between; align-items:start;">
+                                <div class="tpl-name">${t.name}</div>
+                                <span style="font-size:0.65rem; background:#F1F5F9; padding:2px 6px; border-radius:4px; text-transform:uppercase; font-weight:700; color:#64748B;">${t.type || 'modern'}</span>
+                            </div>
                             <div class="tpl-desc">${t.description || ''}</div>
                             <div class="tpl-date">${new Date(t.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</div>
                             <div class="tpl-actions">

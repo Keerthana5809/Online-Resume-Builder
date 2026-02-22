@@ -68,7 +68,7 @@ exports.getStats = async (req, res) => {
 // POST /api/admin/templates - Upload a new template
 exports.uploadTemplate = async (req, res) => {
     try {
-        const { name, description } = req.body;
+        const { name, description, type } = req.body;
         if (!req.file) return res.status(400).json({ msg: 'No file uploaded' });
         if (!name || !name.trim()) return res.status(400).json({ msg: 'Template name is required' });
 
@@ -79,6 +79,7 @@ exports.uploadTemplate = async (req, res) => {
         const template = new Template({
             name: name.trim(),
             description: description || '',
+            type: type || 'modern',
             previewImage: dataUrl,
             fileType: req.file.mimetype,
             uploadedBy: req.user.id
@@ -90,6 +91,7 @@ exports.uploadTemplate = async (req, res) => {
             _id: template._id,
             name: template.name,
             description: template.description,
+            type: template.type,
             fileType: template.fileType,
             isActive: template.isActive,
             createdAt: template.createdAt

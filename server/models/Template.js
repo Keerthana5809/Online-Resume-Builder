@@ -10,6 +10,11 @@ const TemplateSchema = new mongoose.Schema({
         type: String,
         default: ''
     },
+    type: {
+        type: String,
+        enum: ['modern', 'creative', 'classic', 'minimalist', 'executive'],
+        default: 'modern'
+    },
     // Stored as base64 data URL so it works without external file storage
     previewImage: {
         type: String,  // e.g. "data:image/png;base64,..."

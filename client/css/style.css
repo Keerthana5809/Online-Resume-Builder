@@ -1,6 +1,8 @@
 :root {
     --primary-color: #2563EB;
     --primary-hover: #1D4ED8;
+    --accent-color: #2563EB;
+    --accent-light: rgba(37, 99, 235, 0.1);
     --bg-color: #F8FAFC;
     --text-dark: #1E293B;
     --text-muted: #64748B;
@@ -214,29 +216,51 @@ select:focus {
 }
 
 /* Builder */
+/* Inline Editing */
+.editable-field {
+    outline: none;
+    transition: var(--transition);
+    border-radius: 2px;
+    padding: 0 2px;
+}
+
+.editable-field:hover {
+    background: rgba(var(--accent-color), 0.05);
+    box-shadow: 0 0 0 1px var(--accent-border);
+}
+
+.editable-field:focus {
+    background: white;
+    box-shadow: 0 0 0 2px var(--accent-color);
+    color: #000;
+}
+
+/* Builder Layout Adjustments */
 .builder-layout {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    height: calc(100vh - 120px);
+    grid-template-columns: 450px 1fr;
+    height: calc(100vh - 72px);
+    overflow: hidden;
 }
 
 .builder-form {
+    padding: 2rem;
     overflow-y: auto;
-    padding-right: 1rem;
+    border-right: 1px solid var(--border-color);
+    background: white;
 }
 
 .preview-container {
+    padding: 3rem;
     background: #525659;
-    padding: 2rem;
-    border-radius: var(--radius);
+    /* Canva-like dark gray workspace */
     overflow-y: auto;
     display: flex;
     justify-content: center;
+    position: relative;
 }
 
 #resume-preview {
-    background: white;
     width: 100%;
     max-width: 210mm;
     min-height: 297mm;

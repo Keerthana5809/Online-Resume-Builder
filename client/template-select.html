@@ -4,283 +4,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Choose Template - CarizmaX</title>
+    <title>Pick Your Template - CarizmaX</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
+        :root {
+            --primary-accent: #2563EB;
+            --bg-light: #F8FAFC;
         }
 
         body {
-            background: #F8FAFC;
+            background: var(--bg-light);
+            font-family: 'Outfit', sans-serif;
             color: #1E293B;
-            min-height: 100vh;
+            margin: 0;
+            padding: 0;
         }
 
-        /* ── Nav */
         .picker-nav {
             background: #fff;
-            padding: 1rem 2rem;
+            padding: 1.25rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid #E2E8F0;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 1000;
         }
 
         .picker-nav .logo {
             text-decoration: none;
             font-weight: 800;
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             color: #1E293B;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .picker-nav .logo i {
-            color: #2563EB;
-        }
-
-        .cancel-link {
-            color: #64748B;
-            text-decoration: none;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            transition: color 0.2s;
-        }
-
-        .cancel-link:hover {
-            color: #DC2626;
-        }
-
-        /* ── Layout */
-        .picker-container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 2.5rem 1.5rem 5rem;
-        }
-
-        /* ── Steps bar */
-        .steps-bar {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 2.5rem;
-        }
-
-        .step-item {
             display: flex;
             align-items: center;
             gap: 0.6rem;
         }
 
-        .step-circle {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.85rem;
-            font-weight: 700;
-            border: 2px solid #E2E8F0;
-            transition: all 0.3s;
-            flex-shrink: 0;
+        .picker-nav .logo i {
+            color: var(--primary-accent);
         }
 
-        .step-circle.active {
-            background: #2563EB;
-            color: white;
-            border-color: #2563EB;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
-        }
-
-        .step-circle.done {
-            background: #16A34A;
-            color: white;
-            border-color: #16A34A;
-        }
-
-        .step-circle.pending {
-            background: #fff;
-            color: #94A3B8;
-        }
-
-        .step-label {
-            font-size: 0.82rem;
-            color: #94A3B8;
+        .cancel-btn {
+            color: #64748B;
+            text-decoration: none;
             font-weight: 500;
+            font-size: 0.9rem;
+            transition: color 0.2s;
         }
 
-        .step-label.active {
-            color: #2563EB;
-            font-weight: 600;
+        .cancel-btn:hover {
+            color: #DC2626;
         }
 
-        .step-label.done {
-            color: #16A34A;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 1.5rem;
         }
 
-        .step-connector {
-            width: 60px;
-            height: 2px;
-            background: #E2E8F0;
-            margin: 0 0.5rem;
-            transition: background 0.3s;
-        }
-
-        .step-connector.done {
-            background: #16A34A;
-        }
-
-        /* ── Step header */
-        .step-header {
+        .header {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 4rem;
         }
 
-        .step-badge {
-            display: inline-block;
-            background: #EFF6FF;
-            color: #2563EB;
-            border: 1px solid #BFDBFE;
-            padding: 0.3rem 1rem;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .step-header h1 {
-            font-size: 1.9rem;
+        .header h1 {
+            font-size: 2.5rem;
             font-weight: 800;
             color: #0F172A;
-            margin-bottom: 0.4rem;
-        }
-
-        .step-header p {
-            color: #64748B;
-            font-size: 0.95rem;
-        }
-
-        /* ═══════════════════════════════════════
-           STEP 1: Template grid
-        ════════════════════════════════════════*/
-        #step-template {
-            animation: fadeInUp 0.5s ease;
-        }
-
-        .template-grid-pick {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 1.25rem;
-        }
-
-        /* Skeleton loader */
-        .skeleton-card {
-            background: #fff;
-            border: 1px solid #E2E8F0;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .skeleton-img {
-            height: 240px;
-            background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-        }
-
-        .skeleton-text {
-            padding: 0.9rem 1rem;
-        }
-
-        .skeleton-line {
-            height: 12px;
-            border-radius: 4px;
-            background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
+            letter-spacing: -1px;
             margin-bottom: 0.5rem;
         }
 
-        .skeleton-line.short {
-            width: 55%;
+        .header p {
+            color: #64748B;
+            font-size: 1.1rem;
         }
 
-        @keyframes shimmer {
-            to {
-                background-position: -200% 0;
-            }
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
         }
 
-        /* Template card */
         .tpl-card {
             background: #fff;
-            border: 2px solid #E2E8F0;
-            border-radius: 12px;
+            border: 1.5px solid #E2E8F0;
+            border-radius: 16px;
             overflow: hidden;
             cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
         }
 
         .tpl-card:hover {
-            transform: translateY(-5px);
-            border-color: #93C5FD;
-            box-shadow: 0 10px 24px rgba(37, 99, 235, 0.1);
+            transform: translateY(-8px);
+            border-color: var(--primary-accent);
+            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.1);
         }
 
-        .tpl-card.selected {
-            border-color: #2563EB;
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12), 0 10px 24px rgba(37, 99, 235, 0.1);
-        }
-
-        .selected-check {
+        .tpl-badge {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            width: 26px;
-            height: 26px;
-            border-radius: 50%;
-            background: #2563EB;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            top: 15px;
+            left: 15px;
+            background: rgba(15, 23, 42, 0.85);
+            color: #fff;
+            backdrop-filter: blur(4px);
+            padding: 0.4rem 0.9rem;
+            border-radius: 30px;
             font-size: 0.75rem;
-            opacity: 0;
-            transform: scale(0);
-            transition: all 0.25s;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             z-index: 2;
-            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
-        }
-
-        .tpl-card.selected .selected-check {
-            opacity: 1;
-            transform: scale(1);
         }
 
         .tpl-preview {
-            height: 240px;
+            aspect-ratio: 3/4;
+            background: #F1F5F9;
             overflow: hidden;
-            background: #F8FAFC;
-            border-bottom: 1px solid #E2E8F0;
-            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -291,873 +137,151 @@
             height: 100%;
             object-fit: cover;
             object-position: top;
+            transition: transform 0.5s;
         }
 
-        .pdf-badge {
-            text-align: center;
-            color: #64748B;
-        }
-
-        .pdf-badge i {
-            font-size: 3rem;
-            color: #DC2626;
-            display: block;
-            margin-bottom: 0.5rem;
+        .tpl-card:hover .tpl-preview img {
+            transform: scale(1.05);
         }
 
         .tpl-info {
-            padding: 0.9rem 1rem;
+            padding: 1.5rem;
+            border-top: 1px solid #F1F5F9;
         }
 
-        .tpl-name-label {
+        .tpl-name {
             font-weight: 700;
-            font-size: 0.92rem;
+            font-size: 1.15rem;
             color: #1E293B;
-            margin-bottom: 0.2rem;
+            margin-bottom: 0.25rem;
         }
 
-        .tpl-desc-label {
-            font-size: 0.78rem;
-            color: #64748B;
-        }
-
-        /* ═══════════════════════════════════════
-            STEP 2: Live Color Preview
-        ════════════════════════════════════════*/
-        #step-color {
-            display: none;
-            animation: fadeInUp 0.4s ease;
-        }
-
-        .color-layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            align-items: start;
-        }
-
-        /* Left: live preview pane */
-        .preview-pane {
-            background: #fff;
-            border: 1px solid #E2E8F0;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-        }
-
-        .preview-pane-head {
-            padding: 0.8rem 1rem;
-            border-bottom: 1px solid #F1F5F9;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .preview-pane-head span {
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: #64748B;
-        }
-
-        .preview-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-        }
-
-        /* The live mini-resume inside the preview pane */
-        .live-resume-wrap {
-            padding: 1.2rem;
-        }
-
-        .live-resume {
-            border: 1px solid #E2E8F0;
-            border-radius: 8px;
-            overflow: hidden;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.72rem;
-            background: white;
-            transition: all 0.3s;
-        }
-
-        .lr-header {
-            padding: 0.9rem 1rem;
-            background: var(--accent, #2563EB);
-            color: white;
-            transition: background 0.3s;
-        }
-
-        .lr-name {
-            font-size: 1.1rem;
-            font-weight: 800;
-            letter-spacing: -0.3px;
-        }
-
-        .lr-title {
-            font-size: 0.7rem;
-            opacity: 0.9;
-            margin-top: 0.2rem;
-        }
-
-        .lr-contact {
-            font-size: 0.65rem;
-            opacity: 0.8;
-            margin-top: 0.4rem;
-            display: flex;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-        }
-
-        .lr-body {
-            padding: 0.9rem 1rem;
-        }
-
-        .lr-section {
-            margin-bottom: 0.75rem;
-        }
-
-        .lr-section-title {
-            font-size: 0.65rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
-            color: var(--accent, #2563EB);
-            border-bottom: 1.5px solid var(--accent, #2563EB);
-            padding-bottom: 0.25rem;
-            margin-bottom: 0.4rem;
-            transition: color 0.3s, border-color 0.3s;
-        }
-
-        .lr-job-title {
-            font-weight: 700;
-            font-size: 0.72rem;
-        }
-
-        .lr-job-company {
-            font-size: 0.65rem;
-            color: #64748B;
-            margin-bottom: 0.2rem;
-        }
-
-        .lr-body-text {
-            font-size: 0.65rem;
-            color: #475569;
-            line-height: 1.5;
-        }
-
-        .lr-skill-row {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.3rem;
-        }
-
-        .lr-skill {
-            padding: 0.15rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.62rem;
-            font-weight: 600;
-            background: var(--accent-light, #EFF6FF);
-            color: var(--accent, #2563EB);
-            border: 1px solid var(--accent-border, #BFDBFE);
-            transition: background 0.3s, color 0.3s, border-color 0.3s;
-        }
-
-        /* Template image (when PDF or image is uploaded) */
-        .tpl-img-preview {
-            width: 100%;
-            max-height: 400px;
-            object-fit: cover;
-            object-position: top;
-            display: block;
-        }
-
-        .tpl-pdf-msg {
-            padding: 2rem;
-            text-align: center;
-            color: #64748B;
-        }
-
-        .tpl-pdf-msg i {
-            font-size: 2.5rem;
-            color: #DC2626;
-            display: block;
-            margin-bottom: 0.75rem;
-        }
-
-        /* Color overlay on image */
-        .img-color-overlay {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .img-color-overlay::after {
-            content: '';
-            position: absolute;
-            left: 0;
-            right: 0;
-            top: 0;
-            height: 40px;
-            background: var(--overlay-color, #2563EB);
-            mix-blend-mode: multiply;
-            opacity: 0.5;
-            transition: background 0.3s;
-            pointer-events: none;
-        }
-
-        /* Right: color picker pane */
-        .color-pane {
-            background: #fff;
-            border: 1px solid #E2E8F0;
-            border-radius: 12px;
-            padding: 1.4rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-        }
-
-        .color-pane h3 {
-            font-size: 1rem;
-            font-weight: 700;
-            color: #1E293B;
-            margin-bottom: 0.3rem;
-        }
-
-        .color-pane .sub {
-            font-size: 0.82rem;
-            color: #64748B;
-            margin-bottom: 1.2rem;
-        }
-
-        .selected-template-label {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin-bottom: 1.2rem;
-            padding: 0.6rem 0.9rem;
-            background: #F8FAFC;
-            border: 1px solid #E2E8F0;
-            border-radius: 8px;
-        }
-
-        .tpl-thumb-tiny {
-            width: 40px;
-            height: 30px;
-            border-radius: 4px;
-            overflow: hidden;
-            flex-shrink: 0;
-            background: #E2E8F0;
-        }
-
-        .tpl-thumb-tiny img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .stl-name {
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: #1E293B;
-        }
-
-        .stl-change {
-            font-size: 0.75rem;
-            color: #2563EB;
-            cursor: pointer;
-            text-decoration: underline;
-        }
-
-        .color-section-label {
-            font-size: 0.78rem;
-            font-weight: 700;
-            color: #64748B;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.9rem;
-        }
-
-        .colors-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 0.75rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .clr-wrap {
-            text-align: center;
-            cursor: pointer;
-        }
-
-        .clr-swatch {
-            width: 100%;
-            aspect-ratio: 1;
-            border-radius: 50%;
-            margin: 0 auto;
-            border: 3px solid transparent;
-            position: relative;
-            transition: all 0.25s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .clr-swatch:hover {
-            transform: scale(1.12);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .clr-swatch.active {
-            border-color: #1E293B;
-            transform: scale(1.1);
-            box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.15);
-        }
-
-        .clr-check {
-            color: white;
+        .tpl-type {
             font-size: 0.85rem;
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .clr-swatch.active .clr-check {
-            opacity: 1;
-        }
-
-        .clr-name {
-            font-size: 0.65rem;
-            color: #94A3B8;
-            margin-top: 0.3rem;
-            line-height: 1.2;
-        }
-
-        .color-hex-bar {
+            color: #64748B;
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            padding: 0.7rem 1rem;
+            gap: 0.5rem;
+        }
+
+        .tpl-btn {
+            margin-top: 1rem;
+            width: 100%;
+            padding: 0.8rem;
             background: #F8FAFC;
             border: 1px solid #E2E8F0;
-            border-radius: 8px;
-        }
-
-        .hex-dot {
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            flex-shrink: 0;
-            transition: background 0.3s;
-        }
-
-        .hex-text {
-            font-size: 0.82rem;
-            font-weight: 700;
-            color: #1E293B;
-            font-family: monospace;
-        }
-
-        .hex-label {
-            font-size: 0.75rem;
-            color: #64748B;
-            margin-left: auto;
-        }
-
-        /* ── Navigation buttons */
-        .nav-buttons {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid #E2E8F0;
-        }
-
-        .btn-back {
-            background: #fff;
-            color: #475569;
-            border: 1.5px solid #E2E8F0;
-            padding: 0.65rem 1.4rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.88rem;
-            transition: all 0.2s;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
-
-        .btn-back:hover {
-            border-color: #CBD5E1;
-            background: #F8FAFC;
-            color: #1E293B;
-        }
-
-        .btn-next {
-            background: #2563EB;
-            color: white;
-            border: none;
-            padding: 0.65rem 1.6rem;
-            border-radius: 8px;
-            cursor: pointer;
+            border-radius: 10px;
+            color: var(--primary-accent);
             font-weight: 700;
             font-size: 0.9rem;
             transition: all 0.2s;
-            display: inline-flex;
+            display: flex;
             align-items: center;
+            justify-content: center;
             gap: 0.5rem;
         }
 
-        .btn-next:hover:not(:disabled) {
-            background: #1D4ED8;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        .tpl-card:hover .tpl-btn {
+            background: var(--primary-accent);
+            color: #fff;
+            border-color: var(--primary-accent);
         }
 
-        .btn-next:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
+        /* Loading skeleton */
+        .skeleton {
+            background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
         }
 
-        .empty-state {
-            text-align: center;
-            padding: 3rem;
-            color: #94A3B8;
-            grid-column: 1/-1;
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            color: #CBD5E1;
-            display: block;
-            margin-bottom: 1rem;
-        }
-
-        .empty-state a {
-            color: #2563EB;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
+        @keyframes loading {
             to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .color-layout {
-                grid-template-columns: 1fr;
-            }
-
-            .step-label {
-                display: none;
-            }
-
-            .template-grid-pick {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .colors-grid {
-                grid-template-columns: repeat(4, 1fr);
+                background-position: -200% 0;
             }
         }
     </style>
 </head>
 
 <body>
+
     <nav class="picker-nav">
         <a href="/dashboard" class="logo"><i class="fas fa-bolt"></i> CarizmaX</a>
-        <a href="/dashboard" class="cancel-link"><i class="fas fa-times"></i> Cancel</a>
+        <a href="/dashboard" class="cancel-btn">Back to Dashboard</a>
     </nav>
 
-    <div class="picker-container">
-        <!-- Steps indicator -->
-        <div class="steps-bar">
-            <div class="step-item">
-                <div class="step-circle active" id="s1">1</div>
-                <div class="step-label active" id="s1l">Pick Template</div>
-            </div>
-            <div class="step-connector" id="c1"></div>
-            <div class="step-item">
-                <div class="step-circle pending" id="s2">2</div>
-                <div class="step-label" id="s2l">Choose Color</div>
-            </div>
-            <div class="step-connector" id="c2"></div>
-            <div class="step-item">
-                <div class="step-circle pending" id="s3">3</div>
-                <div class="step-label" id="s3l">Fill Details</div>
-            </div>
+    <div class="container">
+        <div class="header">
+            <h1>Select Your Design</h1>
+            <p>Pick a template to start editing your professional resume instantly.</p>
         </div>
 
-        <!-- ═══ STEP 1: Template Selection ═══ -->
-        <div id="step-template">
-            <div class="step-header">
-                <div class="step-badge">Step 1 of 3</div>
-                <h1>Choose Your Template</h1>
-                <p>Pick a design that best represents your professional style</p>
-            </div>
-
-            <!-- Skeleton cards – rendered by JS, no template literals in HTML -->
-            <div class="template-grid-pick" id="templates-grid">
-                <div class="skeleton-card">
-                    <div class="skeleton-img"></div>
-                    <div class="skeleton-text">
-                        <div class="skeleton-line"></div>
-                        <div class="skeleton-line short"></div>
-                    </div>
-                </div>
-                <div class="skeleton-card">
-                    <div class="skeleton-img"></div>
-                    <div class="skeleton-text">
-                        <div class="skeleton-line"></div>
-                        <div class="skeleton-line short"></div>
-                    </div>
-                </div>
-                <div class="skeleton-card">
-                    <div class="skeleton-img"></div>
-                    <div class="skeleton-text">
-                        <div class="skeleton-line"></div>
-                        <div class="skeleton-line short"></div>
-                    </div>
-                </div>
-                <div class="skeleton-card">
-                    <div class="skeleton-img"></div>
-                    <div class="skeleton-text">
-                        <div class="skeleton-line"></div>
-                        <div class="skeleton-line short"></div>
-                    </div>
+        <div class="template-grid" id="template-grid">
+            <!-- Loading Skeletons -->
+            <div class="tpl-card">
+                <div class="tpl-preview skeleton"></div>
+                <div class="tpl-info">
+                    <div style="height:20px; width:70%; margin-bottom:10px;" class="skeleton"></div>
+                    <div style="height:15px; width:40%;" class="skeleton"></div>
                 </div>
             </div>
-
-            <div class="nav-buttons">
-                <a href="/dashboard" class="btn-back"><i class="fas fa-arrow-left"></i> Back</a>
-                <button class="btn-next" id="next-step1" onclick="goToStep2()" disabled>
-                    Choose Color <i class="fas fa-arrow-right"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- ═══ STEP 2: Color Picker with Live Preview ═══ -->
-        <div id="step-color">
-            <div class="step-header">
-                <div class="step-badge">Step 2 of 3</div>
-                <h1>Pick an Accent Color</h1>
-                <p>Watch your template update live as you pick a color</p>
-            </div>
-
-            <div class="color-layout">
-                <!-- Left: Live Preview -->
-                <div>
-                    <div class="preview-pane">
-                        <div class="preview-pane-head">
-                            <div class="preview-dot" id="dot1" style="background:#EF4444;"></div>
-                            <div class="preview-dot" style="background:#F59E0B;"></div>
-                            <div class="preview-dot" style="background:#22C55E;"></div>
-                            <span style="margin-left:0.5rem;">Live Preview</span>
-                        </div>
-
-                        <!-- If template has a preview image, show it with color overlay -->
-                        <div id="img-preview-wrap" style="display:none;" class="img-color-overlay">
-                            <img id="tpl-preview-img" class="tpl-img-preview" src="" alt="Template Preview" />
-                            <div id="color-strip"
-                                style="position:absolute;left:0;right:0;top:0;height:44px;opacity:0.85;transition:background 0.25s;">
-                            </div>
-                        </div>
-
-                        <!-- Mini live-rendered resume (always shown below, or as fallback) -->
-                        <div class="live-resume-wrap">
-                            <div class="live-resume" id="live-resume">
-                                <div class="lr-header" id="lr-header">
-                                    <div class="lr-name">Your Name</div>
-                                    <div class="lr-title">Job Title · Company</div>
-                                    <div class="lr-contact">
-                                        <span>email@example.com</span>
-                                        <span>+1 234 567 8901</span>
-                                        <span>City, Country</span>
-                                    </div>
-                                </div>
-                                <div class="lr-body">
-                                    <div class="lr-section">
-                                        <div class="lr-section-title" id="lr-exp-title">Experience</div>
-                                        <div class="lr-job-title">Senior Software Engineer</div>
-                                        <div class="lr-job-company">Google · 2020 – Present</div>
-                                        <div class="lr-body-text">Led development of scalable systems serving millions
-                                            of users daily.</div>
-                                    </div>
-                                    <div class="lr-section">
-                                        <div class="lr-section-title" id="lr-edu-title">Education</div>
-                                        <div class="lr-job-title">B.S. Computer Science</div>
-                                        <div class="lr-job-company">MIT · 2016 – 2020</div>
-                                    </div>
-                                    <div class="lr-section">
-                                        <div class="lr-section-title" id="lr-skills-title">Skills</div>
-                                        <div class="lr-skill-row">
-                                            <span class="lr-skill" id="lr-s1">React</span>
-                                            <span class="lr-skill" id="lr-s2">Node.js</span>
-                                            <span class="lr-skill" id="lr-s3">Python</span>
-                                            <span class="lr-skill" id="lr-s4">AWS</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right: Color Picker -->
-                <div>
-                    <div class="color-pane">
-                        <!-- Selected template info -->
-                        <div class="selected-template-label">
-                            <div class="tpl-thumb-tiny" id="stl-thumb">
-                                <img id="stl-thumb-img" src="" alt="" />
-                            </div>
-                            <div>
-                                <div class="stl-name" id="stl-name-label">—</div>
-                                <span class="stl-change" onclick="goToStep1()">Change template</span>
-                            </div>
-                        </div>
-
-                        <h3>Accent Color</h3>
-                        <p class="sub">Click a color to see it applied live on your resume preview</p>
-
-                        <div class="color-section-label">Choose a color</div>
-                        <div class="colors-grid" id="colors-grid"></div>
-
-                        <!-- Current color display -->
-                        <div class="color-hex-bar" id="hex-bar">
-                            <div class="hex-dot" id="hex-dot" style="background:#2563EB;"></div>
-                            <span class="hex-text" id="hex-text">#2563EB</span>
-                            <span class="hex-label">Selected color</span>
-                        </div>
-                    </div>
+            <div class="tpl-card">
+                <div class="tpl-preview skeleton"></div>
+                <div class="tpl-info">
+                    <div style="height:20px; width:70%; margin-bottom:10px;" class="skeleton"></div>
+                    <div style="height:15px; width:40%;" class="skeleton"></div>
                 </div>
             </div>
-
-            <div class="nav-buttons">
-                <button class="btn-back" onclick="goToStep1()"><i class="fas fa-arrow-left"></i> Back</button>
-                <button class="btn-next" id="next-step2" onclick="goToBuilder()" disabled>
-                    Start Building <i class="fas fa-arrow-right"></i>
-                </button>
+            <div class="tpl-card">
+                <div class="tpl-preview skeleton"></div>
+                <div class="tpl-info">
+                    <div style="height:20px; width:70%; margin-bottom:10px;" class="skeleton"></div>
+                    <div style="height:15px; width:40%;" class="skeleton"></div>
+                </div>
             </div>
         </div>
     </div>
 
     <script src="js/api.js"></script>
     <script>
-        if (!localStorage.getItem('token')) window.location.href = '/login';
-
-        const BASE = (typeof RENDER_BACKEND_URL !== 'undefined' &&
-            window.location.hostname !== 'localhost' &&
-            window.location.hostname !== '127.0.0.1')
-            ? RENDER_BACKEND_URL : '';
-
-        // ═══ Color palette ═══
-        const COLORS = [
-            { name: 'Ocean Blue', hex: '#2563EB' }, { name: 'Indigo', hex: '#4F46E5' },
-            { name: 'Violet', hex: '#7C3AED' }, { name: 'Teal', hex: '#0D9488' },
-            { name: 'Emerald', hex: '#059669' }, { name: 'Slate', hex: '#475569' },
-            { name: 'Rose', hex: '#E11D48' }, { name: 'Crimson', hex: '#B91C1C' },
-            { name: 'Orange', hex: '#EA580C' }, { name: 'Amber', hex: '#D97706' },
-            { name: 'Navy', hex: '#1E3A5F' }, { name: 'Mauve', hex: '#9D174D' },
-        ];
-
-        let selectedTemplateId = null;
-        let selectedTemplateName = '';
-        let selectedTemplateImg = '';
-        let selectedTemplateType = '';
-        let selectedColor = '#2563EB';
-
-        // ══════════════════════════════════════
-        // STEP 1: Load templates
-        // ══════════════════════════════════════
         async function loadTemplates() {
-            const token = localStorage.getItem('token');
+            const grid = document.getElementById('template-grid');
             try {
-                const res = await fetch(`${BASE}/api/templates`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const templates = await res.json();
-                const grid = document.getElementById('templates-grid');
+                const templates = await api.templates.getAll();
+                grid.innerHTML = '';
 
-                if (!res.ok || !Array.isArray(templates) || templates.length === 0) {
-                    grid.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-layer-group"></i>
-                            <p>No templates available yet.</p>
-                            <p style="margin-top:0.5rem;font-size:0.85rem;">
-                                Ask an admin to upload templates from the <a href="/admin">Admin Panel</a>.
-                            </p>
-                        </div>`;
+                if (templates.length === 0) {
+                    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 4rem; color: #94A3B8;">No templates available. Please try again later.</div>';
                     return;
                 }
 
-                grid.innerHTML = templates.map(t => `
-                    <div class="tpl-card"
-                        data-id="${t._id}"
-                        data-name="${escHtml(t.name)}"
-                        data-img="${t.fileType !== 'application/pdf' ? escHtml(t.previewImage) : ''}"
-                        data-type="${escHtml(t.fileType)}"
-                        onclick="selectTemplate(this)">
-                        <div class="selected-check"><i class="fas fa-check"></i></div>
+                templates.forEach(tpl => {
+                    const card = document.createElement('div');
+                    card.className = 'tpl-card';
+                    card.onclick = () => {
+                        const defaultColor = '#2563EB';
+                        window.location.href = `/builder?templateId=${tpl._id}&template=${tpl.type || 'modern'}&color=${encodeURIComponent(defaultColor)}`;
+                    };
+
+                    card.innerHTML = `
+                        <div class="tpl-badge">${tpl.type || 'standard'}</div>
                         <div class="tpl-preview">
-                            ${t.fileType === 'application/pdf'
-                        ? `<div class="pdf-badge"><i class="fas fa-file-pdf"></i><p style="font-size:0.78rem;">PDF Template</p></div>`
-                        : `<img src="${escHtml(t.previewImage)}" alt="${escHtml(t.name)}" loading="lazy" />`
-                    }
+                            ${tpl.previewImage ? `<img src="${tpl.previewImage}" alt="${tpl.name}">` : `<i class="fas fa-file-pdf" style="font-size:3rem; color:#DC2626;"></i>`}
                         </div>
                         <div class="tpl-info">
-                            <div class="tpl-name-label">${escHtml(t.name)}</div>
-                            <div class="tpl-desc-label">${escHtml(t.description || '')}</div>
+                            <div class="tpl-name">${tpl.name}</div>
+                            <div class="tpl-type"><i class="fas fa-magic"></i> Ready to Edit</div>
+                            <div class="tpl-btn">Use This Template <i class="fas fa-arrow-right"></i></div>
                         </div>
-                    </div>`).join('');
+                    `;
+                    grid.appendChild(card);
+                });
             } catch (err) {
-                document.getElementById('templates-grid').innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-circle"></i>
-                        <p>Failed to load templates. Please refresh the page.</p>
-                    </div>`;
+                console.error(err);
+                grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 4rem; color: #DC2626;">Failed to load templates. Please check your connection.</div>`;
             }
         }
 
-        function escHtml(str) {
-            if (!str) return '';
-            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-        }
-
-        function selectTemplate(el) {
-            document.querySelectorAll('.tpl-card').forEach(c => c.classList.remove('selected'));
-            el.classList.add('selected');
-            selectedTemplateId = el.dataset.id;
-            selectedTemplateName = el.dataset.name;
-            selectedTemplateImg = el.dataset.img;
-            selectedTemplateType = el.dataset.type;
-            document.getElementById('next-step1').disabled = false;
-        }
-
-        // ══════════════════════════════════════
-        // STEP 2: Color picker
-        // ══════════════════════════════════════
-        function goToStep2() {
-            if (!selectedTemplateId) return;
-
-            document.getElementById('step-template').style.display = 'none';
-            document.getElementById('step-color').style.display = 'block';
-
-            // Update steps
-            document.getElementById('s1').className = 'step-circle done';
-            document.getElementById('s1').innerHTML = '<i class="fas fa-check" style="font-size:0.75rem;"></i>';
-            document.getElementById('s1l').className = 'step-label done';
-            document.getElementById('c1').className = 'step-connector done';
-            document.getElementById('s2').className = 'step-circle active';
-            document.getElementById('s2l').className = 'step-label active';
-
-            // Show template thumbnail in the "selected" label
-            document.getElementById('stl-name-label').textContent = selectedTemplateName;
-            if (selectedTemplateImg) {
-                document.getElementById('stl-thumb-img').src = selectedTemplateImg;
-                document.getElementById('stl-thumb').style.display = 'block';
-            } else {
-                document.getElementById('stl-thumb').style.display = 'none';
-            }
-
-            // Show template image in the preview pane if it's an image
-            const imgWrap = document.getElementById('img-preview-wrap');
-            if (selectedTemplateImg) {
-                imgWrap.style.display = 'block';
-                document.getElementById('tpl-preview-img').src = selectedTemplateImg;
-                document.getElementById('color-strip').style.background = selectedColor;
-            } else {
-                imgWrap.style.display = 'none';
-            }
-
-            // Render color swatches
-            renderColors();
-            applyColorToPreview(selectedColor);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function goToStep1() {
-            document.getElementById('step-template').style.display = 'block';
-            document.getElementById('step-color').style.display = 'none';
-            document.getElementById('s1').className = 'step-circle active';
-            document.getElementById('s1').textContent = '1';
-            document.getElementById('s1l').className = 'step-label active';
-            document.getElementById('c1').className = 'step-connector';
-            document.getElementById('s2').className = 'step-circle pending';
-            document.getElementById('s2l').className = 'step-label';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function renderColors() {
-            document.getElementById('colors-grid').innerHTML = COLORS.map(c => `
-                <div class="clr-wrap" onclick="pickColor('${c.hex}', this)" title="${c.name}">
-                    <div class="clr-swatch ${c.hex === selectedColor ? 'active' : ''}" style="background:${c.hex};">
-                        <i class="fas fa-check clr-check"></i>
-                    </div>
-                    <div class="clr-name">${c.name}</div>
-                </div>`).join('');
-        }
-
-        function pickColor(hex, wrapEl) {
-            selectedColor = hex;
-            // Update swatches
-            document.querySelectorAll('.clr-swatch').forEach(s => s.classList.remove('active'));
-            wrapEl.querySelector('.clr-swatch').classList.add('active');
-            // Update hex bar
-            document.getElementById('hex-dot').style.background = hex;
-            document.getElementById('hex-text').textContent = hex;
-            // Apply to live resume preview
-            applyColorToPreview(hex);
-            // Enable next button
-            document.getElementById('next-step2').disabled = false;
-        }
-
-        function applyColorToPreview(hex) {
-            // Compute a lighter tint for skill chip bg
-            const light = hex + '18'; // ~10% opacity
-            const border = hex + '44'; // ~27% opacity
-
-            // Update the mini resume CSS variables
-            const lr = document.getElementById('live-resume');
-            lr.style.setProperty('--accent', hex);
-            lr.style.setProperty('--accent-light', light);
-            lr.style.setProperty('--accent-border', border);
-
-            // Update specific elements directly for cross-browser compatibility
-            document.getElementById('lr-header').style.background = hex;
-            ['lr-exp-title', 'lr-edu-title', 'lr-skills-title'].forEach(id => {
-                const el = document.getElementById(id);
-                el.style.color = hex;
-                el.style.borderColor = hex;
-            });
-            ['lr-s1', 'lr-s2', 'lr-s3', 'lr-s4'].forEach(id => {
-                const el = document.getElementById(id);
-                el.style.color = hex;
-                el.style.borderColor = border;
-                el.style.background = light;
-            });
-
-            // Update color strip on template image preview
-            const strip = document.getElementById('color-strip');
-            if (strip) strip.style.background = hex;
-        }
-
-        function goToBuilder() {
-            if (!selectedTemplateId) return;
-            const color = encodeURIComponent(selectedColor);
-            window.location.href = `/builder?templateId=${selectedTemplateId}&color=${color}`;
-        }
-
-        // Init
-        loadTemplates();
-        // Apply default color to the mini resume on load
-        applyColorToPreview(selectedColor);
+        document.addEventListener('DOMContentLoaded', loadTemplates);
     </script>
 </body>
 

@@ -84,6 +84,15 @@ const api = {
                 method: 'DELETE'
             });
         }
+    },
+
+    templates: {
+        async getAll() {
+            return api.request('/templates');
+        },
+        async getById(id) {
+            return api.request(`/templates/${id}`);
+        }
     }
 };
 
