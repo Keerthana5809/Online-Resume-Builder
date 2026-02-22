@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - CarizmaX</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: #0f172a;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .admin-nav {
+            background: #1e293b;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .admin-nav .logo {
+            color: #f59e0b;
+            font-size: 1.4rem;
+            font-weight: 700;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .admin-badge {
+            background: #f59e0b;
+            color: #000;
+            font-size: 0.65rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 20px;
+            font-weight: 700;
+        }
+
+        .admin-nav .btn-logout {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            animation: fadeInUp 0.5s ease forwards;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        .stat-icon.blue {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .stat-icon.green {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .stat-icon.amber {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+        }
+
+        /* Table */
+        .admin-section {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease 0.1s forwards;
+            opacity: 0;
+        }
+
+        .section-head {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid #334155;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-head h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .user-count {
+            background: #334155;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #0f172a;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.8rem 1.5rem;
+            text-align: left;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #1e2d3d;
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: #263349;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        td {
+            padding: 1rem 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .user-cell {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-admin {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+        }
+
+        .badge-user {
+            background: rgba(100, 116, 139, 0.15);
+            color: #94a3b8;
+        }
+
+        .action-btn {
+            border: none;
+            padding: 0.35rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-promote {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+        }
+
+        .btn-promote:hover {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-demote {
+            background: rgba(245, 158, 11, 0.15);
+            color: #f59e0b;
+        }
+
+        .btn-demote:hover {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+
+        .btn-delete:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        .actions-cell {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #64748b;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="admin-nav">
+        <a href="/admin" class="logo"><i class="fas fa-shield-alt"></i> CarizmaX <span
+                class="admin-badge">ADMIN</span></a>
+        <div style="display:flex; align-items:center; gap:1rem;">
+            <span id="admin-name" style="color:#94a3b8; font-size:0.9rem;"></span>
+            <a href="/dashboard" style="color:#94a3b8; text-decoration:none; font-size:0.85rem;"><i
+                    class="fas fa-arrow-left"></i> Back to App</a>
+            <button class="btn-logout" onclick="api.auth.logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="admin-container">
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon blue"><i class="fas fa-users"></i></div>
+                <div>
+                    <div class="stat-value" id="stat-users">—</div>
+                    <div class="stat-label">Total Users</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green"><i class="fas fa-file-alt"></i></div>
+                <div>
+                    <div class="stat-value" id="stat-resumes">—</div>
+                    <div class="stat-label">Total Resumes</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon amber"><i class="fas fa-user-shield"></i></div>
+                <div>
+                    <div class="stat-value" id="stat-admins">—</div>
+                    <div class="stat-label">Admins</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="admin-section">
+            <div class="section-head">
+                <h2><i class="fas fa-users" style="color:#3b82f6; margin-right:0.5rem;"></i> User Management</h2>
+                <span class="user-count" id="user-count-badge">0 users</span>
+            </div>
+            <div id="users-table-container">
+                <div class="empty-state">
+                    <div class="loader"></div>
+                    <p style="margin-top:1rem;">Loading users...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        if (!localStorage.getItem('token')) window.location.href = '/login';
+        const user = api.auth.getUser();
+        if (!user) window.location.href = '/login';
+        document.getElementById('admin-name').textContent = `Hello, ${user.name}`;
+
+        // Admin-aware request helper
+        async function adminRequest(endpoint, options = {}) {
+            const token = localStorage.getItem('token');
+            const res = await fetch(`${RENDER_BACKEND_URL ? RENDER_BACKEND_URL : ''}/api/admin${endpoint}`, {
+                ...options,
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`, ...options.headers }
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.msg || 'Request failed');
+            return data;
+        }
+
+        async function loadStats() {
+            try {
+                const stats = await adminRequest('/stats');
+                document.getElementById('stat-users').textContent = stats.totalUsers;
+                document.getElementById('stat-resumes').textContent = stats.totalResumes;
+                document.getElementById('stat-admins').textContent = stats.totalAdmins;
+            } catch (err) {
+                if (err.message.includes('Admins only')) {
+                    alert('Access Denied: You are not an admin.');
+                    window.location.href = '/dashboard';
+                }
+            }
+        }
+
+        async function loadUsers() {
+            try {
+                const users = await adminRequest('/users');
+                const container = document.getElementById('users-table-container');
+                document.getElementById('user-count-badge').textContent = `${users.length} users`;
+                const currentUserId = user._id || user.id;
+
+                if (users.length === 0) {
+                    container.innerHTML = `<div class="empty-state"><i class="fas fa-user-slash"></i><p>No users found</p></div>`;
+                    return;
+                }
+
+                container.innerHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Email</th>
+                                <th>Joined</th>
+                                <th>Role</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${users.map(u => `
+                                <tr id="row-${u._id}">
+                                    <td>
+                                        <div class="user-cell">
+                                            <div class="user-avatar">${u.name.charAt(0).toUpperCase()}</div>
+                                            <span>${u.name}</span>
+                                        </div>
+                                    </td>
+                                    <td style="color:#94a3b8;">${u.email}</td>
+                                    <td style="color:#64748b;">${new Date(u.createdAt).toLocaleDateString()}</td>
+                                    <td>
+                                        <span class="badge ${u.isAdmin ? 'badge-admin' : 'badge-user'}">
+                                            ${u.isAdmin ? '⭐ Admin' : 'User'}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="actions-cell">
+                                            ${u._id !== currentUserId ? `
+                                                <button class="action-btn ${u.isAdmin ? 'btn-demote' : 'btn-promote'}" 
+                                                    onclick="toggleAdmin('${u._id}', ${u.isAdmin})">
+                                                    ${u.isAdmin ? '↓ Demote' : '↑ Promote'}
+                                                </button>
+                                                <button class="action-btn btn-delete" onclick="deleteUser('${u._id}', '${u.name}')">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            ` : `<span style="color:#334155; font-size:0.8rem;">(You)</span>`}
+                                        </div>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        async function toggleAdmin(userId, currentStatus) {
+            try {
+                const res = await adminRequest(`/users/${userId}/toggle-admin`, { method: 'PUT' });
+                showToast(res.msg);
+                loadUsers();
+                loadStats();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        async function deleteUser(userId, userName) {
+            if (!confirm(`Delete user "${userName}" and ALL their resumes? This cannot be undone.`)) return;
+            try {
+                const res = await adminRequest(`/users/${userId}`, { method: 'DELETE' });
+                showToast(res.msg);
+                document.getElementById(`row-${userId}`)?.remove();
+                loadStats();
+            } catch (err) {
+                showToast(err.message, 'error');
+            }
+        }
+
+        loadStats();
+        loadUsers();
+    </script>
+
+</body>
+
+</html>

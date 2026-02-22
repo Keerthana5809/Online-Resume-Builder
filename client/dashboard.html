@@ -14,6 +14,9 @@
         <a href="/" class="logo"><i class="fas fa-file-invoice"></i> CarizmaX</a>
         <div class="nav-links">
             <span id="user-name" style="font-weight: 600; color: var(--text-dark); margin-right: 1rem;"></span>
+            <a href="/admin" id="admin-link" style="display:none; margin-right:1rem;" class="btn"
+                style="background:#f59e0b; color:#000; font-weight:700;"><i class="fas fa-shield-alt"></i> Admin
+                Panel</a>
             <a href="#" onclick="api.auth.logout()" class="btn btn-outline">Logout</a>
         </div>
     </nav>
@@ -21,7 +24,7 @@
     <div class="container">
         <div class="dashboard-header">
             <h1>Your Resumes</h1>
-            <a href="/builder" class="btn btn-primary"><i class="fas fa-plus"></i> Create New Resume</a>
+            <a href="/template-select" class="btn btn-primary"><i class="fas fa-plus"></i> Create New Resume</a>
         </div>
 
         <div id="resume-grid" class="resume-grid">
@@ -46,6 +49,12 @@
         const user = api.auth.getUser();
         if (user) {
             document.getElementById('user-name').textContent = `Hello, ${user.name}`;
+            if (user.isAdmin) {
+                const adminLink = document.getElementById('admin-link');
+                adminLink.style.display = 'inline-flex';
+                adminLink.style.background = '#f59e0b';
+                adminLink.style.color = '#000';
+            }
         }
 
         async function loadResumes() {

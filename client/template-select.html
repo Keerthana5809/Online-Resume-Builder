@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Template - CarizmaX</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        .page-body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            min-height: 100vh;
+        }
+
+        .picker-nav {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .picker-nav .logo {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .picker-nav .logo i {
+            color: #818cf8;
+        }
+
+        .picker-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+        }
+
+        .step-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .step-badge {
+            display: inline-block;
+            background: rgba(129, 140, 248, 0.2);
+            color: #818cf8;
+            border: 1px solid rgba(129, 140, 248, 0.3);
+            padding: 0.3rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .step-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 0.8rem;
+        }
+
+        .step-header p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        /* Steps indicator */
+        .steps-bar {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+            margin-bottom: 3rem;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .step-circle {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            transition: all 0.3s;
+        }
+
+        .step-circle.active {
+            background: #818cf8;
+            color: white;
+            box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.25);
+        }
+
+        .step-circle.done {
+            background: #10b981;
+            color: white;
+        }
+
+        .step-circle.pending {
+            background: rgba(255, 255, 255, 0.1);
+            color: #64748b;
+        }
+
+        .step-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .step-label.active {
+            color: #c7d2fe;
+        }
+
+        .step-connector {
+            width: 60px;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 0 0.5rem;
+        }
+
+        /* STEP 1: Template Grid */
+        #step-template {
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .template-grid-pick {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 2rem;
+        }
+
+        .tpl-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .tpl-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(129, 140, 248, 0.5);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .tpl-card.selected {
+            border-color: #818cf8;
+            box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.2), 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .selected-check {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #818cf8;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s;
+        }
+
+        .tpl-card.selected .selected-check {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .tpl-preview {
+            height: 300px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .tpl-preview-content {
+            transform-origin: top left;
+            transform: scale(0.38);
+            width: 264%;
+            height: 264%;
+            pointer-events: none;
+            padding: 20px;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.5;
+        }
+
+        .tpl-info {
+            padding: 1.2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.07);
+        }
+
+        .tpl-info h3 {
+            color: #e2e8f0;
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .tpl-badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        .badge-modern {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+
+        .badge-classic {
+            background: rgba(100, 116, 139, 0.2);
+            color: #94a3b8;
+        }
+
+        .badge-creative {
+            background: rgba(139, 92, 246, 0.2);
+            color: #a78bfa;
+        }
+
+        .badge-minimal {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+        }
+
+        .badge-exec {
+            background: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+        }
+
+        /* STEP 2: Color Picker */
+        #step-color {
+            display: none;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .color-preview-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .color-preview-box h3 {
+            color: #e2e8f0;
+            margin-bottom: 0.5rem;
+        }
+
+        .color-preview-box p {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .selected-template-name {
+            color: #818cf8;
+            font-weight: 600;
+        }
+
+        .colors-grid {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            padding: 1rem 0;
+        }
+
+        .clr-swatch {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid transparent;
+            position: relative;
+        }
+
+        .clr-swatch:hover {
+            transform: scale(1.15);
+        }
+
+        .clr-swatch.selected {
+            border-color: white;
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+        }
+
+        .clr-swatch .check {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            opacity: 0;
+        }
+
+        .clr-swatch.selected .check {
+            opacity: 1;
+        }
+
+        .color-label {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+        }
+
+        /* Navigation buttons */
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3rem;
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, #818cf8, #6366f1);
+            color: white;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-next:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="page-body">
+    <nav class="picker-nav">
+        <a href="/dashboard" class="logo"><i class="fas fa-bolt"></i> CarizmaX</a>
+        <a href="/dashboard" style="color:#94a3b8; text-decoration:none; font-size:0.9rem;"><i class="fas fa-times"></i>
+            Cancel</a>
+    </nav>
+
+    <div class="picker-container">
+        <!-- Steps Bar -->
+        <div class="steps-bar">
+            <div class="step-item">
+                <div class="step-circle active" id="s1">1</div>
+                <div class="step-label active" id="s1l">Pick Template</div>
+            </div>
+            <div class="step-connector"></div>
+            <div class="step-item">
+                <div class="step-circle pending" id="s2">2</div>
+                <div class="step-label" id="s2l">Choose Color</div>
+            </div>
+            <div class="step-connector"></div>
+            <div class="step-item">
+                <div class="step-circle pending" id="s3">3</div>
+                <div class="step-label" id="s3l">Fill Details</div>
+            </div>
+        </div>
+
+        <!-- Step 1: Template -->
+        <div id="step-template">
+            <div class="step-header">
+                <div class="step-badge">Step 1 of 3</div>
+                <h1>Choose Your Template</h1>
+                <p>Pick a design that best represents your professional style</p>
+            </div>
+
+            <div class="template-grid-pick">
+                <!-- Modern -->
+                <div class="tpl-card" data-template="modern" onclick="selectTemplate(this)">
+                    <div class="selected-check"><i class="fas fa-check"></i></div>
+                    <div class="tpl-preview" style="background:#f8fafc;">
+                        <div class="tpl-preview-content">
+                            <div style="border-bottom:2px solid #2563eb;padding-bottom:8px;margin-bottom:10px;">
+                                <div style="font-size:22px;font-weight:800;color:#1e293b;">John Doe</div>
+                                <div style="color:#2563eb;font-size:10px;font-weight:500;">Senior Software Engineer
+                                </div>
+                                <div style="display:flex;gap:8px;margin-top:5px;font-size:8px;color:#64748b;">
+                                    <span>john@email.com</span><span>+1 234 567</span><span>New York</span>
+                                </div>
+                            </div>
+                            <div style="margin-bottom:8px;">
+                                <div
+                                    style="color:#2563eb;font-size:8px;font-weight:700;border-bottom:1px solid #e2e8f0;margin-bottom:4px;text-transform:uppercase;">
+                                    Experience</div>
+                                <div style="font-size:9px;font-weight:700;">Software Engineer • Google</div>
+                                <div style="font-size:7px;color:#64748b;">2020 - Present</div>
+                                <div style="font-size:7px;margin-top:2px;color:#334155;">Led development of scalable
+                                    systems serving 10M+ users.</div>
+                            </div>
+                            <div>
+                                <div
+                                    style="color:#2563eb;font-size:8px;font-weight:700;border-bottom:1px solid #e2e8f0;margin-bottom:4px;text-transform:uppercase;">
+                                    Skills</div>
+                                <div style="display:flex;flex-wrap:wrap;gap:3px;">
+                                    <span
+                                        style="background:#f1f5f9;padding:2px 5px;border-radius:3px;font-size:7px;">React</span>
+                                    <span
+                                        style="background:#f1f5f9;padding:2px 5px;border-radius:3px;font-size:7px;">Node.js</span>
+                                    <span
+                                        style="background:#f1f5f9;padding:2px 5px;border-radius:3px;font-size:7px;">Python</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tpl-info">
+                        <h3>Modern Professional</h3>
+                        <span class="tpl-badge badge-modern">Modern</span>
+                    </div>
+                </div>
+
+                <!-- Classic -->
+                <div class="tpl-card" data-template="classic" onclick="selectTemplate(this)">
+                    <div class="selected-check"><i class="fas fa-check"></i></div>
+                    <div class="tpl-preview" style="background:#fff;">
+                        <div class="tpl-preview-content">
+                            <div
+                                style="text-align:center;border-bottom:1px solid #000;padding-bottom:8px;margin-bottom:8px;">
+                                <div style="font-size:20px;font-weight:800;text-transform:uppercase;">John Doe</div>
+                                <div style="font-size:8px;margin-top:3px;">New York • john@email.com • +1 234 567</div>
+                            </div>
+                            <div style="margin-bottom:6px;">
+                                <div
+                                    style="font-size:9px;font-weight:700;border-bottom:1px solid #000;margin-bottom:4px;">
+                                    PROFESSIONAL SUMMARY</div>
+                                <div style="font-size:7px;color:#444;">Results-driven engineer with 5+ years experience
+                                    building robust web solutions.</div>
+                            </div>
+                            <div>
+                                <div
+                                    style="font-size:9px;font-weight:700;border-bottom:1px solid #000;margin-bottom:4px;">
+                                    EXPERIENCE</div>
+                                <div style="display:flex;justify-content:space-between;font-size:8px;font-weight:700;">
+                                    <span>Google Inc.</span><span style="font-weight:400;">2020-2024</span></div>
+                                <div style="font-size:7px;font-style:italic;">Software Engineer</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tpl-info">
+                        <h3>Classic Standard</h3>
+                        <span class="tpl-badge badge-classic">Classic</span>
+                    </div>
+                </div>
+
+                <!-- Creative -->
+                <div class="tpl-card" data-template="creative" onclick="selectTemplate(this)">
+                    <div class="selected-check"><i class="fas fa-check"></i></div>
+                    <div class="tpl-preview" style="background:#fff;">
+                        <div class="tpl-preview-content" style="padding:0;">
+                            <div style="display:grid;grid-template-columns:1fr 2.2fr;height:100%;">
+                                <div
+                                    style="background:#2D3E50;color:white;padding:15px;display:flex;flex-direction:column;gap:10px;">
+                                    <div style="text-align:center;">
+                                        <div style="font-size:11px;font-weight:800;line-height:1.2;">John<br>Doe</div>
+                                        <div style="font-size:6px;opacity:0.7;margin-top:3px;">Engineer</div>
+                                    </div>
+                                    <div>
+                                        <div
+                                            style="font-size:6px;font-weight:700;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:2px;margin-bottom:4px;">
+                                            CONTACT</div>
+                                        <div style="font-size:5px;opacity:0.8;line-height:1.8;">john@email.com<br>+1 234
+                                            567</div>
+                                    </div>
+                                    <div>
+                                        <div
+                                            style="font-size:6px;font-weight:700;border-bottom:1px solid rgba(255,255,255,0.2);padding-bottom:2px;margin-bottom:4px;">
+                                            SKILLS</div>
+                                        <div style="display:flex;flex-wrap:wrap;gap:2px;">
+                                            <span
+                                                style="border:1px solid rgba(255,255,255,0.3);padding:1px 4px;border-radius:10px;font-size:5px;">React</span>
+                                            <span
+                                                style="border:1px solid rgba(255,255,255,0.3);padding:1px 4px;border-radius:10px;font-size:5px;">Node</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="padding:15px;background:white;">
+                                    <div style="margin-bottom:8px;">
+                                        <div
+                                            style="font-size:9px;font-weight:700;color:#2D3E50;display:flex;align-items:center;gap:4px;margin-bottom:4px;">
+                                            <span>—</span> EXPERIENCE</div>
+                                        <div
+                                            style="padding-left:8px;border-left:2px solid #eee;position:relative;font-size:7px;">
+                                            <span style="font-weight:700;">Software Engineer</span><br><span
+                                                style="color:#2D3E50;">Google</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tpl-info">
+                        <h3>Creative Sidebar</h3>
+                        <span class="tpl-badge badge-creative">Creative</span>
+                    </div>
+                </div>
+
+                <!-- Minimalist -->
+                <div class="tpl-card" data-template="minimalist" onclick="selectTemplate(this)">
+                    <div class="selected-check"><i class="fas fa-check"></i></div>
+                    <div class="tpl-preview" style="background:#fff;">
+                        <div class="tpl-preview-content">
+                            <div style="text-align:center;margin-bottom:10px;">
+                                <div style="font-size:22px;font-weight:300;letter-spacing:2px;color:#000;">JOHN DOE
+                                </div>
+                                <div style="font-size:8px;color:#666;margin-top:4px;letter-spacing:1px;">SENIOR ENGINEER
+                                </div>
+                                <div style="font-size:7px;color:#999;margin-top:4px;">john@email.com | +1 234 567 | New
+                                    York</div>
+                            </div>
+                            <div style="display:grid;grid-template-columns:1fr 2fr;gap:10px;">
+                                <div style="border-right:1px solid #eee;padding-right:8px;">
+                                    <div
+                                        style="font-size:7px;font-weight:700;border-bottom:1px solid #333;margin-bottom:4px;padding-bottom:2px;">
+                                        SKILLS</div>
+                                    <div style="font-size:6px;line-height:2;color:#555;">React.js<br>Node.js<br>Python
+                                    </div>
+                                </div>
+                                <div>
+                                    <div
+                                        style="font-size:7px;font-weight:700;border-bottom:1px solid #333;margin-bottom:4px;padding-bottom:2px;">
+                                        EXPERIENCE</div>
+                                    <div style="font-size:7px;font-weight:700;">Software Engineer</div>
+                                    <div style="font-size:6px;font-style:italic;color:#666;">Google • 2020-2024</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tpl-info">
+                        <h3>Minimalist Clean</h3>
+                        <span class="tpl-badge badge-minimal">Minimal</span>
+                    </div>
+                </div>
+
+                <!-- Executive -->
+                <div class="tpl-card" data-template="executive" onclick="selectTemplate(this)">
+                    <div class="selected-check"><i class="fas fa-check"></i></div>
+                    <div class="tpl-preview" style="background:#fff;">
+                        <div class="tpl-preview-content">
+                            <div style="border-bottom:3px solid #1A237E;padding-bottom:8px;margin-bottom:8px;">
+                                <div style="font-size:22px;font-weight:800;color:#1A237E;letter-spacing:-0.5px;">John
+                                    Doe</div>
+                                <div
+                                    style="font-size:9px;color:#555;letter-spacing:2px;text-transform:uppercase;margin-top:2px;">
+                                    Chief Technology Officer</div>
+                                <div style="display:flex;gap:8px;margin-top:5px;font-size:7px;color:#888;">
+                                    <span>john@email.com</span><span>+1 234 567</span></div>
+                            </div>
+                            <div style="margin-bottom:6px;"><span
+                                    style="background:#1A237E;color:white;padding:2px 8px;font-size:7px;">PROFILE</span>
+                                <div style="font-size:7px;color:#444;margin-top:4px;">Transformational leader with 15+
+                                    years driving tech innovation at scale.</div>
+                            </div>
+                            <div style="display:grid;grid-template-columns:2fr 1fr;gap:8px;">
+                                <div>
+                                    <div
+                                        style="font-size:7px;font-weight:700;color:#1A237E;border-bottom:1px solid #1A237E;margin-bottom:4px;">
+                                        CAREER HISTORY</div>
+                                    <div style="font-size:7px;font-weight:700;">CTO • TechCorp</div>
+                                    <div style="font-size:6px;color:#666;">2018-Present</div>
+                                </div>
+                                <div>
+                                    <div
+                                        style="font-size:7px;font-weight:700;color:#1A237E;border-bottom:1px solid #1A237E;margin-bottom:4px;">
+                                        COMPETENCIES</div>
+                                    <div style="font-size:6px;color:#555;line-height:1.8;">
+                                        Leadership<br>Strategy<br>Innovation</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tpl-info">
+                        <h3>Executive Leader</h3>
+                        <span class="tpl-badge badge-exec">Executive</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <a href="/dashboard" class="btn-back">← Back to Dashboard</a>
+                <button class="btn-next" id="next-to-color" onclick="goToStep2()" disabled>
+                    Choose Color <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Step 2: Color -->
+        <div id="step-color">
+            <div class="step-header">
+                <div class="step-badge">Step 2 of 3</div>
+                <h1>Pick Your Accent Color</h1>
+                <p>A color that reflects your personality and industry</p>
+            </div>
+
+            <div class="color-preview-box">
+                <h3>Selected: <span class="selected-template-name" id="tpl-name-display">—</span></h3>
+                <p>Now choose an accent color for your resume</p>
+            </div>
+
+            <div class="colors-grid" id="colors-grid">
+                <!-- filled by JS -->
+            </div>
+
+            <div class="nav-buttons">
+                <button class="btn-back" onclick="goToStep1()">← Back</button>
+                <button class="btn-next" id="next-to-builder" onclick="goToBuilder()" disabled>
+                    Start Building <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        if (!localStorage.getItem('token')) window.location.href = '/login';
+
+        const COLORS = [
+            { name: 'Indigo', hex: '#4F46E5' }, { name: 'Blue', hex: '#2563EB' },
+            { name: 'Violet', hex: '#7C3AED' }, { name: 'Teal', hex: '#0D9488' },
+            { name: 'Emerald', hex: '#059669' }, { name: 'Rose', hex: '#E11D48' },
+            { name: 'Orange', hex: '#EA580C' }, { name: 'Amber', hex: '#D97706' },
+            { name: 'Slate', hex: '#475569' }, { name: 'Navy', hex: '#1E3A5F' },
+            { name: 'Crimson', hex: '#B91C1C' }, { name: 'Pink', hex: '#DB2777' },
+        ];
+
+        const TEMPLATE_NAMES = {
+            modern: 'Modern Professional', classic: 'Classic Standard',
+            creative: 'Creative Sidebar', minimalist: 'Minimalist Clean', executive: 'Executive Leader'
+        };
+
+        let selectedTemplate = null;
+        let selectedColor = null;
+
+        function selectTemplate(el) {
+            document.querySelectorAll('.tpl-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedTemplate = el.dataset.template;
+            document.getElementById('next-to-color').disabled = false;
+        }
+
+        function goToStep2() {
+            if (!selectedTemplate) return;
+            document.getElementById('step-template').style.display = 'none';
+            document.getElementById('step-color').style.display = 'block';
+            document.getElementById('tpl-name-display').textContent = TEMPLATE_NAMES[selectedTemplate];
+
+            // Step circles
+            document.getElementById('s1').className = 'step-circle done';
+            document.getElementById('s1').innerHTML = '<i class="fas fa-check"></i>';
+            document.getElementById('s2').className = 'step-circle active';
+            document.getElementById('s2l').className = 'step-label active';
+
+            renderColors();
+        }
+
+        function goToStep1() {
+            document.getElementById('step-template').style.display = 'block';
+            document.getElementById('step-color').style.display = 'none';
+            document.getElementById('s1').className = 'step-circle active';
+            document.getElementById('s1').textContent = '1';
+            document.getElementById('s2').className = 'step-circle pending';
+            document.getElementById('s2l').className = 'step-label';
+        }
+
+        function renderColors() {
+            const grid = document.getElementById('colors-grid');
+            grid.innerHTML = COLORS.map(c => `
+                <div style="text-align:center;">
+                    <div class="clr-swatch ${selectedColor === c.hex ? 'selected' : ''}"
+                        style="background:${c.hex};"
+                        data-hex="${c.hex}"
+                        onclick="pickColor(this, '${c.hex}')">
+                        <span class="check"><i class="fas fa-check"></i></span>
+                    </div>
+                    <div class="color-label">${c.name}</div>
+                </div>
+            `).join('');
+        }
+
+        function pickColor(el, hex) {
+            document.querySelectorAll('.clr-swatch').forEach(s => s.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedColor = hex;
+            document.getElementById('next-to-builder').disabled = false;
+        }
+
+        function goToBuilder() {
+            if (!selectedTemplate || !selectedColor) return;
+            const color = encodeURIComponent(selectedColor);
+            window.location.href = `/builder?template=${selectedTemplate}&color=${color}`;
+        }
+    </script>
+</body>
+
+</html>

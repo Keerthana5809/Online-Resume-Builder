@@ -17,6 +17,14 @@
         {
             "source": "/builder",
             "destination": "/builder.html"
+        },
+        {
+            "source": "/template-select",
+            "destination": "/template-select.html"
+        },
+        {
+            "source": "/admin",
+            "destination": "/admin.html"
         }
     ]
 }

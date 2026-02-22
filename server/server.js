@@ -38,12 +38,11 @@ app.use(express.static(path.join(__dirname, '../client'), { extensions: ['html']
 // API Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/resumes', require('./routes/resumeRoutes'));
+app.use('/api/admin', require('./routes/adminRoutes'));
 
-// Catch-all route to serve index.html for non-API routes (SPA support)
+// Serve HTML pages
 app.use((req, res, next) => {
-    if (req.path.startsWith('/api')) {
-        return next();
-    }
+    if (req.path.startsWith('/api')) return next();
     res.sendFile(path.join(__dirname, '../client/index.html'));
 });
 

@@ -34,7 +34,7 @@ exports.register = async (req, res) => {
             { expiresIn: '24h' },
             (err, token) => {
                 if (err) throw err;
-                res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
+                res.json({ token, user: { id: user.id, name: user.name, email: user.email, isAdmin: user.isAdmin } });
             }
         );
     } catch (err) {
@@ -69,7 +69,7 @@ exports.login = async (req, res) => {
             { expiresIn: '24h' },
             (err, token) => {
                 if (err) throw err;
-                res.json({ token, user: { id: user.id, name: user.name, email: user.email } });
+                res.json({ token, user: { id: user.id, name: user.name, email: user.email, isAdmin: user.isAdmin } });
             }
         );
     } catch (err) {

@@ -5,6 +5,12 @@ if (!localStorage.getItem('token')) {
 
 const urlParams = new URLSearchParams(window.location.search);
 const resumeId = urlParams.get('id');
+const urlTemplate = urlParams.get('template') || 'modern';
+const urlColor = urlParams.get('color') || '#2563EB';
+
+// Apply chosen color as primary
+document.documentElement.style.setProperty('--primary-color', decodeURIComponent(urlColor));
+document.documentElement.style.setProperty('--primary-hover', decodeURIComponent(urlColor));
 
 let resumeData = {
     personalDetails: {
@@ -23,7 +29,8 @@ let resumeData = {
     skills: [],
     certifications: [],
     languages: [],
-    templateType: 'modern'
+    templateType: urlTemplate,
+    accentColor: decodeURIComponent(urlColor)
 };
 
 // Initialize
