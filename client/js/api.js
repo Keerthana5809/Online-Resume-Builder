@@ -1,5 +1,5 @@
 // The URL where your backend is hosted (Render)
-const RENDER_BACKEND_URL = 'https://online-resume-builder-client.onrender.com';
+const RENDER_BACKEND_URL = 'https://carizmax.onrender.com';
 
 const API_URL = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
     ? '/api'

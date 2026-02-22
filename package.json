@@ -1,7 +1,7 @@
 {
-  "name": "orb",
+  "name": "carizmax",
   "version": "1.0.0",
-  "description": "A full-stack web application to build professional resumes with ease.",
+  "description": "CarizmaX - A premium full-stack web application to build professional resumes with ease.",
   "main": "index.js",
   "scripts": {
     "start": "node server/server.js",
